@@ -1,0 +1,274 @@
+﻿using System;
+using System.IO;
+using System.Media;
+using Stars.Source;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace Stars
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+            normal_size = Size;
+            full_size = Screen.PrimaryScreen.Bounds.Size;
+        }
+
+        Size normal_size, full_size;
+        Point form_pos, old_mouse_pos;
+
+        Graphics graphics = null;
+        Random rnd = new Random();
+        SoundPlayer sp = new SoundPlayer();
+        Star[] stars = new Star[15000];
+
+        uint interval = 300;
+        uint time_fly = 0;
+        uint time_bias = 50;
+        sbyte speed = 5;
+        bool shake = false;
+        string bias = string.Empty;
+        string[] ways =
+        {
+            "up",
+            "down",
+            "left",
+            "right",
+            "rotation_up",
+            "rotation_down",
+            "rotation_left",
+            "rotation_right"
+        };
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            graphics?.Clear(Color.Black);
+
+            foreach (Star star in stars)
+            {
+                DrawStar(star);
+                MoveStar(star);
+            }
+
+            pictureBox1.Refresh();
+
+            time_fly += 1;
+            if (time_fly > interval - time_bias)
+            {
+                if (shake || bias == string.Empty)
+                {
+                    int n = shake ? rnd.Next(4) : ways.Length;
+                    bias = ways[rnd.Next(n)];
+                }
+            }
+            if (time_fly > interval)
+            {
+                bias = string.Empty;
+                speed = (sbyte)rnd.Next(-2, 18);
+                time_fly = 0;
+                time_bias = (uint)rnd.Next(20, 60);
+                interval = (uint)(100 * rnd.Next(1, 15));
+                shake = rnd.Next(100) > 75 ? true : false;
+            }
+        }
+
+        private void MoveStar(Star star)
+        {
+            double fi = 2;
+            float step = 10;
+
+            switch (bias)
+            {
+                case "up":
+                    star.Y += step;
+                    break;
+                case "down":
+                    star.Y -= step;
+                    break;
+                case "left":
+                    star.X += step;
+                    break;
+                case "right":
+                    star.X -= step;
+                    break;
+                case "rotation_up":
+                    star.Y = (float)(star.X * Math.Sin(AngleToRadians(fi)) + star.Y * Math.Cos(AngleToRadians(fi)));
+                    break;
+                case "rotation_down":
+                    star.Y = (float)(-star.X * Math.Sin(AngleToRadians(fi)) + star.Y * Math.Cos(AngleToRadians(fi)));
+                    break;
+                case "rotation_left":
+                    star.X = (float)(star.X * Math.Cos(AngleToRadians(fi)) - star.Y * Math.Sin(AngleToRadians(fi)));
+                    break;
+                case "rotation_right":
+                    star.X = (float)(star.X * Math.Cos(AngleToRadians(fi)) + star.Y * Math.Sin(AngleToRadians(fi)));
+                    break;
+            }
+
+            star.Z -= speed;
+            if (star.Z < 0)
+            {
+                star.X = rnd.Next(-Width, Width);
+                star.Y = rnd.Next(-Height, Height);
+                star.Z = rnd.Next(1, Width);
+            }
+        }
+
+        private void DrawStar(Star star)
+        {
+            int _SIZE = 5;
+            float size = Map(star.Z, 0, Width, _SIZE, 0);
+            float x = Map(star.X / star.Z, 0, 1, 0, Width) + Width / 2;
+            float y = Map(star.Y / star.Z, 0, 1, 0, Height) + Height / 2;
+            int color = (int)Map(star.Z, 0, Width, 255, 0); if (color < 0) color = 0;
+
+            using (SolidBrush sb = new SolidBrush(Color.FromArgb(color, 255, 255)))
+                if (graphics != null) graphics.FillEllipse(sb, x, y, size, size);
+        }
+
+        private double AngleToRadians(double angle)
+        {
+            return angle * Math.PI / 180;
+        }
+
+        private float Map(float n, float start_1, float stop_1, float start_2, float stop_2)
+        {
+            return ((n - start_1) * (stop_2 - start_2) / (stop_1 - start_1)) + start_2;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            if (File.Exists("music.wav"))
+            {
+                sp.SoundLocation = ".\\music.wav";
+                sp.Load();
+                sp.PlayLooping();
+            }
+
+            for (int i = 0; i < stars.Length; ++i)
+            {
+                stars[i] = new Star()
+                {
+                    X = rnd.Next(-Width, Width),
+                    Y = rnd.Next(-Height, Height),
+                    Z = rnd.Next(1, Width),
+                };
+            }
+
+            ChangeSize();
+            timer1.Start();
+        }
+
+        private void ChangeSize()
+        {
+            if (Size != full_size)
+            {
+                form_pos = Location;
+                Location = new Point(0, 0);
+                Size = full_size;
+            }
+            else
+            {
+                Location = form_pos;
+                Size = normal_size;
+            }
+
+            pictureBox1.Image?.Dispose();
+            graphics?.Dispose();
+            pictureBox1.Image = new Bitmap(Width, Height);
+            graphics = Graphics.FromImage(pictureBox1.Image);
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Alt && e.KeyCode == Keys.Enter || e.KeyCode == Keys.F)
+            {
+                ChangeSize();
+            }
+            switch (e.KeyCode)
+            {
+                case Keys.Escape:
+                    Application.Exit();
+                    break;
+                case Keys.Space:
+                    if (timer1.Enabled)
+                    {
+                        timer1.Stop();
+                        sp.Stop();
+                    }
+                    else
+                    {
+                        timer1.Start();
+                        if (sp.IsLoadCompleted) sp.PlayLooping();
+                    }
+                    break;
+                case Keys.G:
+                    bias = ways[rnd.Next(4)];
+                    break;
+                case Keys.Up:
+                    bias = "up";
+                    break;
+                case Keys.Down:
+                    bias = "down";
+                    break;
+                case Keys.Left:
+                    bias = "left";
+                    break;
+                case Keys.Right:
+                    bias = "right";
+                    break;
+                case Keys.W:
+                    bias = "rotation_up";
+                    break;
+                case Keys.S:
+                    bias = "rotation_down";
+                    break;
+                case Keys.A:
+                    bias = "rotation_right";
+                    break;
+                case Keys.D:
+                    bias = "rotation_left";
+                    break;
+            }
+        }
+
+        private void Form1_KeyUp(object sender, KeyEventArgs e)
+        {
+            bias = string.Empty;
+        }
+
+        private void pictureBox1_DoubleClick(object sender, EventArgs e)
+        {
+            ChangeSize();
+        }
+
+        private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                old_mouse_pos = e.Location;
+            }
+            if (e.Button == MouseButtons.Right)
+            {
+                contextMenuStrip1.Show(MousePosition);
+            }
+        }
+
+        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                int dx = e.Location.X - old_mouse_pos.X;
+                int dy = e.Location.Y - old_mouse_pos.Y;
+                Location = new Point(Location.X + dx, Location.Y + dy);
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+    }
+}
