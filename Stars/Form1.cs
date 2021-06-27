@@ -122,10 +122,12 @@ namespace Stars
             float size = Map(star.Z, 0, Width, _SIZE, 0);
             float x = Map(star.X / star.Z, 0, 1, 0, Width) + Width / 2;
             float y = Map(star.Y / star.Z, 0, 1, 0, Height) + Height / 2;
-            int color = (int)Map(star.Z, 0, Width, 255, 0); if (color < 0) color = 0;
+            int color = (int)Map(star.Z, 0, Width, 255, 0);
+            if (color < 0) color = 0;
 
-            using (SolidBrush sb = new SolidBrush(Color.FromArgb(color, 255, 255)))
-                if (graphics != null) graphics.FillEllipse(sb, x, y, size, size);
+            SolidBrush sb = new SolidBrush(Color.FromArgb(color, 255, 255));
+            if (graphics != null) graphics.FillEllipse(sb, x, y, size, size);
+            sp?.Dispose();
         }
 
         private double AngleToRadians(double angle)
@@ -183,15 +185,10 @@ namespace Stars
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Alt && e.KeyCode == Keys.Enter || e.KeyCode == Keys.F)
-            {
-                ChangeSize();
-            }
+            if (e.Alt && e.KeyCode == Keys.Enter) ChangeSize();
+
             switch (e.KeyCode)
             {
-                case Keys.Escape:
-                    Application.Exit();
-                    break;
                 case Keys.Space:
                     if (timer1.Enabled)
                     {
@@ -203,6 +200,12 @@ namespace Stars
                         timer1.Start();
                         if (sp.IsLoadCompleted) sp.PlayLooping();
                     }
+                    break;
+                case Keys.Escape:
+                    Application.Exit();
+                    break;
+                case Keys.F:
+                    ChangeSize();
                     break;
                 case Keys.G:
                     bias = ways[rnd.Next(4)];
@@ -246,7 +249,7 @@ namespace Stars
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left && Size != full_size)
             {
                 old_mouse_pos = e.Location;
             }
@@ -258,7 +261,7 @@ namespace Stars
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            if (e.Button == MouseButtons.Left && Size != full_size)
             {
                 int dx = e.Location.X - old_mouse_pos.X;
                 int dy = e.Location.Y - old_mouse_pos.Y;
