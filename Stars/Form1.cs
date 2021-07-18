@@ -118,6 +118,7 @@ namespace Stars
 
         private void DrawStar(Star star)
         {
+            if (graphics == null) return;
             int _SIZE = 5;
             float size = Map(star.Z, 0, Width, _SIZE, 0);
             float x = Map(star.X / star.Z, 0, 1, 0, Width) + Width / 2;
@@ -125,9 +126,10 @@ namespace Stars
             int color = (int)Map(star.Z, 0, Width, 255, 0);
             if (color < 0) color = 0;
 
-            SolidBrush sb = new SolidBrush(Color.FromArgb(color, 255, 255));
-            if (graphics != null) graphics.FillEllipse(sb, x, y, size, size);
-            sp?.Dispose();
+            using (SolidBrush sb = new SolidBrush(Color.FromArgb(color, 255, 255)))
+            {
+                graphics.FillEllipse(sb, x, y, size, size);
+            }
         }
 
         private double AngleToRadians(double angle)
@@ -142,9 +144,9 @@ namespace Stars
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (File.Exists("music.wav"))
+            if (File.Exists(".\\music\\\\music.wav"))
             {
-                sp.SoundLocation = ".\\music.wav";
+                sp.SoundLocation = ".\\music\\music.wav";
                 sp.Load();
                 sp.PlayLooping();
             }
