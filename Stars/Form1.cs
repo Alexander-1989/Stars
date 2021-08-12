@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Media;
 using Stars.Source;
 using System.Drawing;
 using System.Windows.Forms;
@@ -14,6 +13,24 @@ namespace Stars
             InitializeComponent();
             normal_size = Size;
             full_size = Screen.PrimaryScreen.Bounds.Size;
+            form_pos = Location;
+            MouseWheel += Form1_MouseWheel;
+        }
+
+        private void Form1_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                int vol = player.Volume + 100;
+                if (vol > 0) vol = 0;
+                player.Volume = vol;
+            }
+            else if (e.Delta < 0)
+            {
+                int vol = player.Volume - 100;
+                if (vol < -5000) vol = -5000;
+                player.Volume = vol;
+            }
         }
 
         Size normal_size, full_size;
@@ -21,7 +38,7 @@ namespace Stars
 
         Graphics graphics = null;
         Random rnd = new Random();
-        SoundPlayer sp = new SoundPlayer();
+        MediaPlayer.MediaPlayer player = new MediaPlayer.MediaPlayer();
         Star[] stars = new Star[15000];
 
         uint interval = 300;
@@ -144,11 +161,11 @@ namespace Stars
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (File.Exists(".\\music\\\\music.wav"))
+            if (File.Exists(".\\music\\\\music.mp3"))
             {
-                sp.SoundLocation = ".\\music\\music.wav";
-                sp.Load();
-                sp.PlayLooping();
+                player.Open(".\\music\\music.mp3");
+                player.Play();
+                player.PlayCount = int.MaxValue;
             }
 
             for (int i = 0; i < stars.Length; ++i)
@@ -165,18 +182,19 @@ namespace Stars
             timer1.Start();
         }
 
+
         private void ChangeSize()
         {
-            if (Size != full_size)
+            if (Size == full_size)
+            {
+                Location = form_pos;
+                Size = normal_size;
+            }
+            else
             {
                 form_pos = Location;
                 Location = new Point(0, 0);
                 Size = full_size;
-            }
-            else
-            {
-                Location = form_pos;
-                Size = normal_size;
             }
 
             pictureBox1.Image?.Dispose();
@@ -195,12 +213,12 @@ namespace Stars
                     if (timer1.Enabled)
                     {
                         timer1.Stop();
-                        sp.Stop();
+                        player.Pause();
                     }
                     else
                     {
                         timer1.Start();
-                        if (sp.IsLoadCompleted) sp.PlayLooping();
+                        player.Play();
                     }
                     break;
                 case Keys.Escape:
