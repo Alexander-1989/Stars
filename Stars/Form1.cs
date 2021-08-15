@@ -318,6 +318,6 @@ namespace Stars
     static class NativeMethods
     {
         [DllImport("user32.dll", EntryPoint = "ShowCursor")]
-        internal static extern int ShowCursor(bool bShow);
+        internal static extern int ShowCursor(bool show);
     }
 }
