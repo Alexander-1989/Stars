@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Stars.Source;
+using System.Runtime.InteropServices;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -15,6 +16,7 @@ namespace Stars
             full_size = Screen.PrimaryScreen.Bounds.Size;
             form_pos = Location;
             MouseWheel += Form1_MouseWheel;
+            player.PlayCount = int.MaxValue; // Повторять 2 147 483 647 раз 
         }
 
         Size normal_size, full_size;
@@ -59,14 +61,8 @@ namespace Stars
 
         private void Form1_MouseWheel(object sender, MouseEventArgs e)
         {
-            if (e.Delta > 0)
-            {
-                VolumeMusicUp();
-            }
-            else
-            {
-                VolumeMusicDown();
-            }
+            if (e.Delta > 0) VolumeMusicUp();
+            else if (e.Delta < 0) VolumeMusicDown();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -172,7 +168,6 @@ namespace Stars
             if (File.Exists(".\\music\\\\music.mp3"))
             {
                 player.Open(".\\music\\music.mp3");
-                player.PlayCount = int.MaxValue;
                 player.Play();
             }
 
@@ -196,12 +191,14 @@ namespace Stars
             {
                 Location = form_pos;
                 Size = normal_size;
+                NativeMethods.ShowCursor(true);
             }
             else
             {
                 form_pos = Location;
                 Location = new Point(0, 0);
                 Size = full_size;
+                NativeMethods.ShowCursor(false);
             }
 
             pictureBox1.Image?.Dispose();
@@ -316,5 +313,11 @@ namespace Stars
         {
             Application.Exit();
         }
+    }
+
+    static class NativeMethods
+    {
+        [DllImport("user32.dll", EntryPoint = "ShowCursor")]
+        internal static extern int ShowCursor(bool bShow);
     }
 }
