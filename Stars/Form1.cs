@@ -17,22 +17,6 @@ namespace Stars
             MouseWheel += Form1_MouseWheel;
         }
 
-        private void Form1_MouseWheel(object sender, MouseEventArgs e)
-        {
-            if (e.Delta > 0)
-            {
-                int vol = player.Volume + 100;
-                if (vol > 0) vol = 0;
-                player.Volume = vol;
-            }
-            else if (e.Delta < 0)
-            {
-                int vol = player.Volume - 100;
-                if (vol < -5000) vol = -5000;
-                player.Volume = vol;
-            }
-        }
-
         Size normal_size, full_size;
         Point form_pos, old_mouse_pos;
 
@@ -58,6 +42,32 @@ namespace Stars
             "rotation_left",
             "rotation_right"
         };
+
+        private void VolumeMusicUp()
+        {
+            int vol = player.Volume + 100;
+            if (vol > 0) vol = 0;
+            player.Volume = vol;
+        }
+
+        private void VolumeMusicDown()
+        {
+            int vol = player.Volume - 100;
+            if (vol < -6000) vol = -6000;
+            player.Volume = vol;
+        }
+
+        private void Form1_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                VolumeMusicUp();
+            }
+            else
+            {
+                VolumeMusicDown();
+            }
+        }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -140,13 +150,11 @@ namespace Stars
             float size = Map(star.Z, 0, Width, _SIZE, 0);
             float x = Map(star.X / star.Z, 0, 1, 0, Width) + Width / 2;
             float y = Map(star.Y / star.Z, 0, 1, 0, Height) + Height / 2;
-            int color = (int)Map(star.Z, 0, Width, 255, 0);
-            if (color < 0) color = 0;
+            float color = Map(star.Z, 0, Width, 255, 0); if (color < 0) color = 0;
 
-            using (SolidBrush sb = new SolidBrush(Color.FromArgb(color, 255, 255)))
-            {
-                graphics.FillEllipse(sb, x, y, size, size);
-            }
+            SolidBrush sb = new SolidBrush(Color.FromArgb((int)color, 255, 255));
+            graphics.FillEllipse(sb, x, y, size, size);
+            sb.Dispose();
         }
 
         private double AngleToRadians(double angle)
@@ -164,8 +172,8 @@ namespace Stars
             if (File.Exists(".\\music\\\\music.mp3"))
             {
                 player.Open(".\\music\\music.mp3");
-                player.Play();
                 player.PlayCount = int.MaxValue;
+                player.Play();
             }
 
             for (int i = 0; i < stars.Length; ++i)
@@ -181,7 +189,6 @@ namespace Stars
             ChangeSize();
             timer1.Start();
         }
-
 
         private void ChangeSize()
         {
@@ -205,7 +212,23 @@ namespace Stars
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Alt && e.KeyCode == Keys.Enter) ChangeSize();
+            if (e.Alt && e.KeyCode == Keys.Enter)
+            {
+                ChangeSize();
+                return;
+            }
+
+            if (e.Control && e.KeyCode == Keys.Up)
+            {
+                VolumeMusicUp();
+                return;
+            }
+
+            if (e.Control && e.KeyCode == Keys.Down)
+            {
+                VolumeMusicDown();
+                return;
+            }
 
             switch (e.KeyCode)
             {
@@ -213,12 +236,12 @@ namespace Stars
                     if (timer1.Enabled)
                     {
                         timer1.Stop();
-                        player.Pause();
+                        if (player.PlayState == MediaPlayer.MPPlayStateConstants.mpPlaying) player.Pause();
                     }
                     else
                     {
                         timer1.Start();
-                        player.Play();
+                        if (player.PlayState == MediaPlayer.MPPlayStateConstants.mpPaused) player.Play();
                     }
                     break;
                 case Keys.Escape:
