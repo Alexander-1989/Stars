@@ -91,7 +91,7 @@ namespace Stars
             if (time_fly > interval)
             {
                 bias = string.Empty;
-                speed = (sbyte)rnd.Next(-2, 18);
+                speed = (sbyte)rnd.Next(-1, 20);
                 time_fly = 0;
                 time_bias = (uint)rnd.Next(20, 60);
                 interval = (uint)(100 * rnd.Next(1, 15));
