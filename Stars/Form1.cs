@@ -167,9 +167,10 @@ namespace Stars
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (File.Exists(".\\music\\\\music.mp3"))
+            string sound_file = ".\\music\\\\music.mp3";
+            if (File.Exists(sound_file))
             {
-                player.Open(".\\music\\music.mp3");
+                player.Open(sound_file);
                 player.Play();
             }
 
@@ -307,17 +308,18 @@ namespace Stars
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left && !is_full_size)
-            {
-                int dx = e.Location.X - old_mouse_pos.X;
-                int dy = e.Location.Y - old_mouse_pos.Y;
-                Location = new Point(Location.X + dx, Location.Y + dy);
-            }
             if (is_full_size && !timer2.Enabled)
             {
                 NativeMethods.ShowCursor(true);
                 show_mouse_time = 0;
                 timer2.Start();
+            }
+
+            if (e.Button == MouseButtons.Left && !is_full_size)
+            {
+                int dx = e.Location.X - old_mouse_pos.X;
+                int dy = e.Location.Y - old_mouse_pos.Y;
+                Location = new Point(Location.X + dx, Location.Y + dy);
             }
         }
 
