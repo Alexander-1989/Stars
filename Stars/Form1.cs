@@ -190,12 +190,13 @@ namespace Stars
 
         private void ChangeSize()
         {
+            show_mouse_time = 0;
+
             if (is_full_size)
             {
                 Location = form_pos;
                 Size = normal_size;
                 is_full_size = false;
-                show_mouse_time = 0;
                 timer2.Stop();
                 NativeMethods.ShowCursor(true);
             }
@@ -296,6 +297,12 @@ namespace Stars
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
+            if (is_full_size && !timer2.Enabled)
+            {
+                NativeMethods.ShowCursor(true);
+                show_mouse_time = 0;
+                timer2.Start();
+            }
             if (e.Button == MouseButtons.Left && !is_full_size)
             {
                 old_mouse_pos = e.Location;
