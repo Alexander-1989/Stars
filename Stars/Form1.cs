@@ -31,6 +31,8 @@ namespace Stars
         uint time_fly = 0;
         uint time_bias = 50;
         sbyte speed = 5;
+        sbyte show_mouse_time = 0;
+        bool is_full_size = false;
         bool shake = false;
         string bias = string.Empty;
         string[] ways =
@@ -75,7 +77,7 @@ namespace Stars
                 MoveStar(star);
             }
 
-            pictureBox1.Refresh();
+            pictureBox1.Invalidate();
 
             time_fly += 1;
             if (time_fly > interval - time_bias)
@@ -187,10 +189,13 @@ namespace Stars
 
         private void ChangeSize()
         {
-            if (Size == full_size)
+            if (is_full_size)
             {
                 Location = form_pos;
                 Size = normal_size;
+                is_full_size = false;
+                show_mouse_time = 0;
+                timer2.Stop();
                 NativeMethods.ShowCursor(true);
             }
             else
@@ -198,7 +203,8 @@ namespace Stars
                 form_pos = Location;
                 Location = new Point(0, 0);
                 Size = full_size;
-                NativeMethods.ShowCursor(false);
+                is_full_size = true;
+                timer2.Start();
             }
 
             pictureBox1.Image?.Dispose();
@@ -238,7 +244,7 @@ namespace Stars
                     else
                     {
                         timer1.Start();
-                        if (player.PlayState == MediaPlayer.MPPlayStateConstants.mpPaused) player.Play();
+                        if (player.PlayState != MediaPlayer.MPPlayStateConstants.mpPlaying) player.Play();
                     }
                     break;
                 case Keys.Escape:
@@ -289,7 +295,7 @@ namespace Stars
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left && Size != full_size)
+            if (e.Button == MouseButtons.Left && !is_full_size)
             {
                 old_mouse_pos = e.Location;
             }
@@ -301,17 +307,34 @@ namespace Stars
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left && Size != full_size)
+            if (e.Button == MouseButtons.Left && !is_full_size)
             {
                 int dx = e.Location.X - old_mouse_pos.X;
                 int dy = e.Location.Y - old_mouse_pos.Y;
                 Location = new Point(Location.X + dx, Location.Y + dy);
+            }
+            if (is_full_size && !timer2.Enabled)
+            {
+                NativeMethods.ShowCursor(true);
+                show_mouse_time = 0;
+                timer2.Start();
             }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            show_mouse_time++;
+            if (show_mouse_time > 3)
+            {
+                show_mouse_time = 0;
+                timer2.Stop();
+                NativeMethods.ShowCursor(false);
+            }
         }
     }
 
