@@ -167,7 +167,7 @@ namespace Stars
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            string sound_file = ".\\Music\\\\music.mp3";
+            string sound_file = ".\\Music\\music.mp3";
             if (File.Exists(sound_file))
             {
                 player.Open(sound_file);
