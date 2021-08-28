@@ -238,6 +238,7 @@ namespace Stars
             switch (e.KeyCode)
             {
                 case Keys.Space:
+                    MessageBox.Show(string.Format("{0}\n{1}", show_mouse_time, timer2.Enabled));
                     if (timer1.Enabled)
                     {
                         timer1.Stop();
@@ -297,12 +298,6 @@ namespace Stars
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (is_full_size && !timer2.Enabled)
-            {
-                NativeMethods.ShowCursor(true);
-                show_mouse_time = 0;
-                timer2.Start();
-            }
             if (e.Button == MouseButtons.Left && !is_full_size)
             {
                 old_mouse_pos = e.Location;
@@ -310,6 +305,12 @@ namespace Stars
             if (e.Button == MouseButtons.Right)
             {
                 contextMenuStrip1.Show(MousePosition);
+            }
+            if (is_full_size && !timer2.Enabled)
+            {
+                NativeMethods.ShowCursor(true);
+                show_mouse_time = 0;
+                timer2.Start();
             }
         }
 
@@ -340,9 +341,9 @@ namespace Stars
             show_mouse_time++;
             if (show_mouse_time > 3)
             {
+                NativeMethods.ShowCursor(false);
                 show_mouse_time = 0;
                 timer2.Stop();
-                NativeMethods.ShowCursor(false);
             }
         }
     }
