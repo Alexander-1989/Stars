@@ -238,7 +238,6 @@ namespace Stars
             switch (e.KeyCode)
             {
                 case Keys.Space:
-                    MessageBox.Show(string.Format("{0}\n{1}", show_mouse_time, timer2.Enabled));
                     if (timer1.Enabled)
                     {
                         timer1.Stop();
