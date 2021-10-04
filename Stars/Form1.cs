@@ -33,6 +33,7 @@ namespace Stars
         sbyte speed = 5;
         sbyte show_mouse_time = 0;
         bool is_full_size = false;
+        bool is_mute = false;
         bool shake = false;
         string bias = string.Empty;
         string[] ways =
@@ -61,6 +62,16 @@ namespace Stars
             player.Volume = vol;
         }
 
+        private void Normal_Volume()
+        {
+            player.Volume = 0;
+        }
+
+        private void Mute_Volume()
+        {
+            player.Volume = -6000;
+        }
+
         private void Form1_MouseWheel(object sender, MouseEventArgs e)
         {
             if (e.Delta > 0) VolumeMusicUp();
@@ -80,7 +91,7 @@ namespace Stars
             pictureBox1.Invalidate();
 
             time_fly += 1;
-            if (time_fly > interval - time_bias)
+            if (time_fly + time_bias > interval)
             {
                 if (shake || bias == string.Empty)
                 {
@@ -255,6 +266,11 @@ namespace Stars
                 case Keys.F:
                     ChangeSize();
                     break;
+                case Keys.M:
+                    if (is_mute) Normal_Volume();
+                    else Mute_Volume();
+                    is_mute = !is_mute;
+                    break;
                 case Keys.G:
                     bias = ways[rnd.Next(4)];
                     break;
@@ -301,10 +317,12 @@ namespace Stars
             {
                 old_mouse_pos = e.Location;
             }
+
             if (e.Button == MouseButtons.Right)
             {
                 contextMenuStrip1.Show(MousePosition);
             }
+
             if (is_full_size && !timer2.Enabled)
             {
                 NativeMethods.ShowCursor(true);
