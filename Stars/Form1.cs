@@ -363,7 +363,6 @@ namespace Stars
         {
             if (show_mouse_time > 3)
             {
-                System.Media.SystemSounds.Beep.Play();
                 timer2.Stop();
                 show_mouse_time = 0;
                 NativeMethods.ShowCursor(false);
