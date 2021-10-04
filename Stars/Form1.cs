@@ -271,6 +271,12 @@ namespace Stars
                     else Mute_Volume();
                     is_mute = !is_mute;
                     break;
+                case Keys.N:
+                    NativeMethods.ShowCursor(false);
+                    break;
+                case Keys.B:
+                    NativeMethods.ShowCursor(true);
+                    break;
                 case Keys.G:
                     bias = ways[rnd.Next(4)];
                     break;
@@ -325,9 +331,9 @@ namespace Stars
 
             if (is_full_size && !timer2.Enabled)
             {
-                NativeMethods.ShowCursor(true);
                 show_mouse_time = 0;
                 timer2.Start();
+                NativeMethods.ShowCursor(true);
             }
         }
 
@@ -335,9 +341,9 @@ namespace Stars
         {
             if (is_full_size && !timer2.Enabled)
             {
-                NativeMethods.ShowCursor(true);
                 show_mouse_time = 0;
                 timer2.Start();
+                NativeMethods.ShowCursor(true);
             }
 
             if (e.Button == MouseButtons.Left && !is_full_size)
@@ -355,13 +361,15 @@ namespace Stars
 
         private void timer2_Tick(object sender, EventArgs e)
         {
-            show_mouse_time++;
             if (show_mouse_time > 3)
             {
-                NativeMethods.ShowCursor(false);
-                show_mouse_time = 0;
+                System.Media.SystemSounds.Beep.Play();
                 timer2.Stop();
+                show_mouse_time = 0;
+                NativeMethods.ShowCursor(false);
             }
+
+            show_mouse_time += 1;
         }
     }
 
