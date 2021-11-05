@@ -50,15 +50,17 @@ namespace Stars
 
         private void VolumeMusicUp()
         {
-            int vol = player.Volume + 100;
-            if (vol > 0) vol = 0;
+            int vol = player.Volume;
+            if (vol == 0) return;
+            vol += 100;
             player.Volume = vol;
         }
 
         private void VolumeMusicDown()
         {
-            int vol = player.Volume - 100;
-            if (vol < -6000) vol = -6000;
+            int vol = player.Volume;
+            if (vol <= -6000) return;
+            vol -= 100;
             player.Volume = vol;
         }
 
@@ -201,8 +203,6 @@ namespace Stars
 
         private void ChangeSize()
         {
-            show_mouse_time = 0;
-
             if (is_full_size)
             {
                 Location = form_pos;
@@ -217,6 +217,7 @@ namespace Stars
                 Location = new Point(0, 0);
                 Size = full_size;
                 is_full_size = true;
+                show_mouse_time = 0;
                 timer2.Start();
             }
 
@@ -329,8 +330,9 @@ namespace Stars
                 contextMenuStrip1.Show(MousePosition);
             }
 
-            if (is_full_size && !timer2.Enabled)
+            if (is_full_size)
             {
+                System.Media.SystemSounds.Beep.Play();
                 show_mouse_time = 0;
                 timer2.Start();
                 NativeMethods.ShowCursor(true);
@@ -339,11 +341,12 @@ namespace Stars
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
+            NativeMethods.ShowCursor(true);
+
             if (is_full_size && !timer2.Enabled)
             {
                 show_mouse_time = 0;
                 timer2.Start();
-                NativeMethods.ShowCursor(true);
             }
 
             if (e.Button == MouseButtons.Left && !is_full_size)
@@ -367,8 +370,10 @@ namespace Stars
                 show_mouse_time = 0;
                 NativeMethods.ShowCursor(false);
             }
-
-            show_mouse_time += 1;
+            else
+            {
+                show_mouse_time++;
+            }
         }
     }
 
