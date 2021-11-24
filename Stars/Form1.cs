@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using Stars.Source;
-using System.Runtime.InteropServices;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace Stars
 {
@@ -50,17 +50,15 @@ namespace Stars
 
         private void VolumeMusicUp()
         {
-            int vol = player.Volume;
-            if (vol == 0) return;
-            vol += 100;
+            int vol = player.Volume + 100;
+            if (vol > 0) vol = 0;
             player.Volume = vol;
         }
 
         private void VolumeMusicDown()
         {
-            int vol = player.Volume;
-            if (vol <= -6000) return;
-            vol -= 100;
+            int vol = player.Volume - 100;
+            if (vol < -6000) vol = -6000;
             player.Volume = vol;
         }
 
@@ -208,7 +206,6 @@ namespace Stars
                 Location = form_pos;
                 Size = normal_size;
                 is_full_size = false;
-                timer2.Stop();
                 NativeMethods.ShowCursor(true);
             }
             else
@@ -217,8 +214,7 @@ namespace Stars
                 Location = new Point(0, 0);
                 Size = full_size;
                 is_full_size = true;
-                show_mouse_time = 0;
-                timer2.Start();
+                NativeMethods.ShowCursor(false);
             }
 
             pictureBox1.Image?.Dispose();
@@ -320,35 +316,22 @@ namespace Stars
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left && !is_full_size)
+            if (!is_full_size)
             {
-                old_mouse_pos = e.Location;
-            }
+                if (e.Button == MouseButtons.Left)
+                {
+                    old_mouse_pos = e.Location;
+                }
 
-            if (e.Button == MouseButtons.Right)
-            {
-                contextMenuStrip1.Show(MousePosition);
-            }
-
-            if (is_full_size)
-            {
-                System.Media.SystemSounds.Beep.Play();
-                show_mouse_time = 0;
-                timer2.Start();
-                NativeMethods.ShowCursor(true);
+                if (e.Button == MouseButtons.Right)
+                {
+                    contextMenuStrip1.Show(MousePosition);
+                }
             }
         }
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            NativeMethods.ShowCursor(true);
-
-            if (is_full_size && !timer2.Enabled)
-            {
-                show_mouse_time = 0;
-                timer2.Start();
-            }
-
             if (e.Button == MouseButtons.Left && !is_full_size)
             {
                 int dx = e.Location.X - old_mouse_pos.X;
