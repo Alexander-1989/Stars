@@ -4,6 +4,7 @@ using Stars.Source;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using Media = MediaPlayer;
 
 namespace Stars
 {
@@ -16,66 +17,72 @@ namespace Stars
             full_size = Screen.PrimaryScreen.Bounds.Size;
             form_pos = Location;
             MouseWheel += Form1_MouseWheel;
-            player.PlayCount = int.MaxValue; // Повторять 2 147 483 647 раз 
+            mPlayer.PlayCount = int.MaxValue; // Повторять 2 147 483 647 раз 
         }
 
-        Size normal_size, full_size;
-        Point form_pos, old_mouse_pos;
+        enum Direction
+        {
+            None,
+            Up,
+            Down,
+            Left,
+            Right,
+            RotationUp,
+            RotationDown,
+            RotationLeft,
+            RotationRight
+        }
 
         Graphics graphics = null;
         Random rnd = new Random();
-        MediaPlayer.MediaPlayer player = new MediaPlayer.MediaPlayer();
+        Size normal_size, full_size;
+        Point form_pos, old_mouse_pos;
         Star[] stars = new Star[15000];
-
-        uint interval = 300;
         uint time_fly = 0;
         uint time_bias = 50;
+        uint interval = 300;
         sbyte speed = 5;
         sbyte show_mouse_time = 0;
         bool is_full_size = false;
         bool is_mute = false;
         bool shake = false;
-        string bias = string.Empty;
-        string[] ways =
-        {
-            "up",
-            "down",
-            "left",
-            "right",
-            "rotation_up",
-            "rotation_down",
-            "rotation_left",
-            "rotation_right"
-        };
+        Direction way = Direction.None;
+        Media.MediaPlayer mPlayer = new Media.MediaPlayer();
 
         private void VolumeMusicUp()
         {
-            int vol = player.Volume + 100;
+            int vol = mPlayer.Volume + 100;
             if (vol > 0) vol = 0;
-            player.Volume = vol;
+            mPlayer.Volume = vol;
         }
 
         private void VolumeMusicDown()
         {
-            int vol = player.Volume - 100;
+            int vol = mPlayer.Volume - 100;
             if (vol < -6000) vol = -6000;
-            player.Volume = vol;
+            mPlayer.Volume = vol;
         }
 
         private void Normal_Volume()
         {
-            player.Volume = 0;
+            mPlayer.Volume = 0;
         }
 
         private void Mute_Volume()
         {
-            player.Volume = -6000;
+            mPlayer.Volume = -6000;
         }
 
         private void Form1_MouseWheel(object sender, MouseEventArgs e)
         {
-            if (e.Delta > 0) VolumeMusicUp();
-            else if (e.Delta < 0) VolumeMusicDown();
+            if (e.Delta > 0)
+            {
+                VolumeMusicUp();
+            }
+            else if (e.Delta < 0)
+            {
+                VolumeMusicDown();
+            }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -91,17 +98,18 @@ namespace Stars
             pictureBox1.Invalidate();
 
             time_fly += 1;
+
             if (time_fly + time_bias > interval)
             {
-                if (shake || bias == string.Empty)
+                if (shake || way == Direction.None)
                 {
-                    int n = shake ? rnd.Next(4) : ways.Length;
-                    bias = ways[rnd.Next(n)];
+                    way = (Direction)(shake ? rnd.Next(1, 5) : rnd.Next(1, 9));
                 }
             }
+
             if (time_fly > interval)
             {
-                bias = string.Empty;
+                way = Direction.None;
                 speed = (sbyte)rnd.Next(-1, 20);
                 time_fly = 0;
                 time_bias = (uint)rnd.Next(20, 60);
@@ -112,34 +120,34 @@ namespace Stars
 
         private void MoveStar(Star star)
         {
-            double fi = 2;
+            double alpha = 2;
             float step = 10;
 
-            switch (bias)
+            switch (way)
             {
-                case "up":
+                case Direction.Up:
                     star.Y += step;
                     break;
-                case "down":
+                case Direction.Down:
                     star.Y -= step;
                     break;
-                case "left":
+                case Direction.Left:
                     star.X += step;
                     break;
-                case "right":
+                case Direction.Right:
                     star.X -= step;
                     break;
-                case "rotation_up":
-                    star.Y = (float)(star.X * Math.Sin(AngleToRadians(fi)) + star.Y * Math.Cos(AngleToRadians(fi)));
+                case Direction.RotationUp:
+                    star.Y = (float)(star.X * Math.Sin(AngleToRadians(alpha)) + star.Y * Math.Cos(AngleToRadians(alpha)));
                     break;
-                case "rotation_down":
-                    star.Y = (float)(-star.X * Math.Sin(AngleToRadians(fi)) + star.Y * Math.Cos(AngleToRadians(fi)));
+                case Direction.RotationDown:
+                    star.Y = (float)(-star.X * Math.Sin(AngleToRadians(alpha)) + star.Y * Math.Cos(AngleToRadians(alpha)));
                     break;
-                case "rotation_left":
-                    star.X = (float)(star.X * Math.Cos(AngleToRadians(fi)) - star.Y * Math.Sin(AngleToRadians(fi)));
+                case Direction.RotationLeft:
+                    star.X = (float)(star.X * Math.Cos(AngleToRadians(alpha)) - star.Y * Math.Sin(AngleToRadians(alpha)));
                     break;
-                case "rotation_right":
-                    star.X = (float)(star.X * Math.Cos(AngleToRadians(fi)) + star.Y * Math.Sin(AngleToRadians(fi)));
+                case Direction.RotationRight:
+                    star.X = (float)(star.X * Math.Cos(AngleToRadians(alpha)) + star.Y * Math.Sin(AngleToRadians(alpha)));
                     break;
             }
 
@@ -161,9 +169,10 @@ namespace Stars
             float y = Map(star.Y / star.Z, 0, 1, 0, Height) + Height / 2;
             float color = Map(star.Z, 0, Width, 255, 0); if (color < 0) color = 0;
 
-            SolidBrush sb = new SolidBrush(Color.FromArgb((int)color, 255, 255));
-            graphics.FillEllipse(sb, x, y, size, size);
-            sb.Dispose();
+            using (SolidBrush sb = new SolidBrush(Color.FromArgb((int)color, 255, 255)))
+            {
+                graphics.FillEllipse(sb, x, y, size, size);
+            }
         }
 
         private double AngleToRadians(double angle)
@@ -181,8 +190,8 @@ namespace Stars
             const string sound_file = ".\\Music\\music.mp3";
             if (File.Exists(sound_file))
             {
-                player.Open(sound_file);
-                player.Play();
+                mPlayer.Open(sound_file);
+                mPlayer.Play();
             }
 
             for (int i = 0; i < stars.Length; ++i)
@@ -249,12 +258,18 @@ namespace Stars
                     if (timer1.Enabled)
                     {
                         timer1.Stop();
-                        if (player.PlayState == MediaPlayer.MPPlayStateConstants.mpPlaying) player.Pause();
+                        if (mPlayer.PlayState == MediaPlayer.MPPlayStateConstants.mpPlaying)
+                        {
+                            mPlayer.Pause();
+                        }
                     }
                     else
                     {
                         timer1.Start();
-                        if (player.PlayState != MediaPlayer.MPPlayStateConstants.mpPlaying) player.Play();
+                        if (mPlayer.PlayState != MediaPlayer.MPPlayStateConstants.mpPlaying)
+                        {
+                            mPlayer.Play();
+                        }
                     }
                     break;
                 case Keys.Escape:
@@ -275,38 +290,38 @@ namespace Stars
                     NativeMethods.ShowCursor(true);
                     break;
                 case Keys.G:
-                    bias = ways[rnd.Next(4)];
+                    way = (Direction)rnd.Next(1, 5);
                     break;
                 case Keys.Up:
-                    bias = "up";
+                    way = Direction.Up;
                     break;
                 case Keys.Down:
-                    bias = "down";
+                    way = Direction.Down;
                     break;
                 case Keys.Left:
-                    bias = "left";
+                    way = Direction.Left;
                     break;
                 case Keys.Right:
-                    bias = "right";
+                    way = Direction.Right;
                     break;
                 case Keys.W:
-                    bias = "rotation_up";
+                    way = Direction.RotationUp;
                     break;
                 case Keys.S:
-                    bias = "rotation_down";
+                    way = Direction.RotationDown;
                     break;
                 case Keys.A:
-                    bias = "rotation_right";
+                    way = Direction.RotationRight;
                     break;
                 case Keys.D:
-                    bias = "rotation_left";
+                    way = Direction.RotationLeft;
                     break;
             }
         }
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
-            bias = string.Empty;
+            way = Direction.None;
         }
 
         private void pictureBox1_DoubleClick(object sender, EventArgs e)
