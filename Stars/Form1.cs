@@ -38,6 +38,7 @@ namespace Stars
         Size normal_size, full_size;
         Point form_pos, old_mouse_pos;
         Star[] stars = new Star[15000];
+        Direction way = Direction.None;
         uint time_fly = 0;
         uint time_bias = 50;
         uint interval = 300;
@@ -46,7 +47,6 @@ namespace Stars
         bool is_full_size = false;
         bool is_mute = false;
         bool shake = false;
-        Direction way = Direction.None;
         Media.MediaPlayer mPlayer = new Media.MediaPlayer();
 
         private void VolumeMusicUp()
@@ -168,17 +168,15 @@ namespace Stars
         private void DrawStar(Star star)
         {
             if (graphics == null) return;
-            int _SIZE = 5;
 
-            float size = Map(star.Z, 0, Width, _SIZE, 0);
+            float size = Map(star.Z, 0, Width, 5, 0);
             float x = Map(star.X / star.Z, 0, 1, 0, Width)  + Width / 2;
             float y = Map(star.Y / star.Z, 0, 1, 0, Height) + Height / 2;
 
-            byte R = (byte)Map(star.Z, 0, Width, 255, 0);
-            byte G = 255;
-            byte B = 255;
+            byte B = 255, G = 255, R = (byte)Map(star.Z, 0, Width, 255, 0);
+            Color color = Color.FromArgb(R, G, B);
 
-            using (SolidBrush sb = new SolidBrush(Color.FromArgb(R, G, B)))
+            using (SolidBrush sb = new SolidBrush(color))
             {
                 graphics.FillEllipse(sb, x, y, size, size);
             }
