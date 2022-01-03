@@ -96,8 +96,7 @@ namespace Stars
             }
 
             pictureBox1.Invalidate();
-
-            time_fly += 1;
+            time_fly++;
 
             if (time_fly + time_bias > interval)
             {
@@ -167,9 +166,9 @@ namespace Stars
             float size = Map(star.Z, 0, Width, _SIZE, 0);
             float x = Map(star.X / star.Z, 0, 1, 0, Width) + Width / 2;
             float y = Map(star.Y / star.Z, 0, 1, 0, Height) + Height / 2;
-            float color = Map(star.Z, 0, Width, 255, 0); if (color < 0) color = 0;
+            byte color = (byte)Map(star.Z, 0, Width, 255, 0);
 
-            using (SolidBrush sb = new SolidBrush(Color.FromArgb((int)color, 255, 255)))
+            using (SolidBrush sb = new SolidBrush(Color.FromArgb(color, 255, 255)))
             {
                 graphics.FillEllipse(sb, x, y, size, size);
             }
@@ -315,6 +314,12 @@ namespace Stars
                     break;
                 case Keys.D:
                     way = Direction.RotationLeft;
+                    break;
+                case Keys.Oemplus:
+                    speed++;
+                    break;
+                case Keys.OemMinus:
+                    speed--;
                     break;
             }
         }
