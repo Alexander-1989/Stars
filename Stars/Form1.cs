@@ -87,7 +87,8 @@ namespace Stars
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            graphics?.Clear(Color.Black);
+            if (graphics == null) return;
+            graphics.Clear(Color.Black);
 
             foreach (Star star in stars)
             {
@@ -155,20 +156,29 @@ namespace Stars
             {
                 star.X = rnd.Next(-Width, Width);
                 star.Y = rnd.Next(-Height, Height);
-                star.Z = rnd.Next(1, Width);
+                star.Z = rnd.Next(0, Width);
             }
+        }
+
+        private float Map(float n, float start_1, float stop_1, float start_2, float stop_2)
+        {
+            return start_2 + ((n - start_1) * (stop_2 - start_2) / (stop_1 - start_1));
         }
 
         private void DrawStar(Star star)
         {
             if (graphics == null) return;
             int _SIZE = 5;
-            float size = Map(star.Z, 0, Width, _SIZE, 0);
-            float x = Map(star.X / star.Z, 0, 1, 0, Width) + Width / 2;
-            float y = Map(star.Y / star.Z, 0, 1, 0, Height) + Height / 2;
-            byte color = (byte)Map(star.Z, 0, Width, 255, 0);
 
-            using (SolidBrush sb = new SolidBrush(Color.FromArgb(color, 255, 255)))
+            float size = Map(star.Z, 0, Width, _SIZE, 0);
+            float x = Map(star.X / star.Z, 0, 1, 0, Width)  + Width / 2;
+            float y = Map(star.Y / star.Z, 0, 1, 0, Height) + Height / 2;
+
+            byte R = (byte)Map(star.Z, 0, Width, 255, 0);
+            byte G = 255;
+            byte B = 255;
+
+            using (SolidBrush sb = new SolidBrush(Color.FromArgb(R, G, B)))
             {
                 graphics.FillEllipse(sb, x, y, size, size);
             }
@@ -177,11 +187,6 @@ namespace Stars
         private double AngleToRadians(double angle)
         {
             return angle * Math.PI / 180;
-        }
-
-        private float Map(float n, float start_1, float stop_1, float start_2, float stop_2)
-        {
-            return ((n - start_1) * (stop_2 - start_2) / (stop_1 - start_1)) + start_2;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -233,7 +238,7 @@ namespace Stars
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Alt && e.KeyCode == Keys.Enter)
+            if ((e.KeyData == Keys.F) || (e.Alt && e.KeyCode == Keys.Enter))
             {
                 ChangeSize();
                 return;
@@ -254,32 +259,37 @@ namespace Stars
             switch (e.KeyCode)
             {
                 case Keys.Space:
-                    if (timer1.Enabled)
                     {
-                        timer1.Stop();
-                        if (mPlayer.PlayState == MediaPlayer.MPPlayStateConstants.mpPlaying)
+                        if (timer1.Enabled)
                         {
-                            mPlayer.Pause();
+                            timer1.Stop();
+                            if (mPlayer.PlayState == Media.MPPlayStateConstants.mpPlaying)
+                            {
+                                mPlayer.Pause();
+                            }
                         }
-                    }
-                    else
-                    {
-                        timer1.Start();
-                        if (mPlayer.PlayState != MediaPlayer.MPPlayStateConstants.mpPlaying)
+                        else
                         {
-                            mPlayer.Play();
+                            timer1.Start();
+                            if (mPlayer.PlayState != Media.MPPlayStateConstants.mpPlaying)
+                            {
+                                mPlayer.Play();
+                            }
                         }
                     }
                     break;
                 case Keys.Escape:
                     Application.Exit();
                     break;
-                case Keys.F:
-                    ChangeSize();
-                    break;
                 case Keys.M:
-                    if (is_mute) Normal_Volume();
-                    else Mute_Volume();
+                    if (is_mute)
+                    {
+                        Normal_Volume();
+                    }
+                    else
+                    {
+                        Mute_Volume();
+                    }
                     is_mute = !is_mute;
                     break;
                 case Keys.N:
