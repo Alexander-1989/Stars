@@ -3,8 +3,8 @@ using System.IO;
 using Stars.Source;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
 using Media = MediaPlayer;
+
 
 namespace Stars
 {
@@ -34,41 +34,41 @@ namespace Stars
         }
 
         Graphics graphics = null;
-        Random rnd = new Random();
+        static Random rnd = new Random();
         Size normal_size, full_size;
         Point form_pos, old_mouse_pos;
         Star[] stars = new Star[15000];
         Direction way = Direction.None;
-        uint time_fly = 0;
-        uint time_bias = 50;
-        uint interval = 300;
+        uint timeFly = 0;
+        uint timeBias = 50;
+        uint period = 300;
         sbyte speed = 5;
-        sbyte show_mouse_time = 0;
-        bool is_full_size = false;
-        bool is_mute = false;
+        sbyte showMouseTime = 0;
         bool shake = false;
+        bool isMute = false;
+        bool isFullSize = false;
         Media.MediaPlayer mPlayer = new Media.MediaPlayer();
 
-        private void VolumeMusicUp()
+        private void VolumeUp()
         {
             int vol = mPlayer.Volume + 100;
             if (vol > 0) vol = 0;
             mPlayer.Volume = vol;
         }
 
-        private void VolumeMusicDown()
+        private void VolumeDown()
         {
             int vol = mPlayer.Volume - 100;
             if (vol < -6000) vol = -6000;
             mPlayer.Volume = vol;
         }
 
-        private void Normal_Volume()
+        private void NormalVolume()
         {
             mPlayer.Volume = 0;
         }
 
-        private void Mute_Volume()
+        private void MuteVolume()
         {
             mPlayer.Volume = -6000;
         }
@@ -77,11 +77,11 @@ namespace Stars
         {
             if (e.Delta > 0)
             {
-                VolumeMusicUp();
+                VolumeUp();
             }
             else if (e.Delta < 0)
             {
-                VolumeMusicDown();
+                VolumeDown();
             }
         }
 
@@ -97,9 +97,9 @@ namespace Stars
             }
 
             pictureBox1.Invalidate();
-            time_fly++;
+            timeFly++;
 
-            if (time_fly + time_bias > interval)
+            if (timeFly + timeBias > period)
             {
                 if (shake || way == Direction.None)
                 {
@@ -107,14 +107,14 @@ namespace Stars
                 }
             }
 
-            if (time_fly > interval)
+            if (timeFly > period)
             {
                 way = Direction.None;
                 speed = (sbyte)rnd.Next(-1, 20);
-                time_fly = 0;
-                time_bias = (uint)rnd.Next(20, 60);
-                interval = (uint)(100 * rnd.Next(1, 15));
-                shake = rnd.Next(100) > 75 ? true : false;
+                timeFly = 0;
+                timeBias = (uint)rnd.Next(20, 60);
+                period = (uint)(100 * rnd.Next(1, 15));
+                shake = rnd.Next(100) > 70 ? true : false;
             }
         }
 
@@ -160,9 +160,9 @@ namespace Stars
             }
         }
 
-        private float Map(float n, float start_1, float stop_1, float start_2, float stop_2)
+        private float Map(float n, float start1, float stop1, float start2, float stop2)
         {
-            return start_2 + ((n - start_1) * (stop_2 - start_2) / (stop_1 - start_1));
+            return ((n - start1) * (stop2 - start2) / (stop1 - start1)) + start2;
         }
 
         private void DrawStar(Star star)
@@ -170,7 +170,7 @@ namespace Stars
             if (graphics == null) return;
 
             float size = Map(star.Z, 0, Width, 5, 0);
-            float x = Map(star.X / star.Z, 0, 1, 0, Width)  + Width / 2;
+            float x = Map(star.X / star.Z, 0, 1, 0, Width) + Width / 2;
             float y = Map(star.Y / star.Z, 0, 1, 0, Height) + Height / 2;
 
             byte B = 255, G = 255, R = (byte)Map(star.Z, 0, Width, 255, 0);
@@ -189,7 +189,7 @@ namespace Stars
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            const string sound_file = ".\\Music\\music.mp3";
+            string sound_file = ".\\Music\\music.mp3";
             if (File.Exists(sound_file))
             {
                 mPlayer.Open(sound_file);
@@ -210,23 +210,26 @@ namespace Stars
             timer1.Start();
         }
 
+        private void SetSize(Point location, Size size, bool showCursor)
+        {
+            Location = location;
+            Size = size;
+            NativeMethods.ShowCursor(showCursor);
+        }
+
         private void ChangeSize()
         {
-            if (is_full_size)
+            if (isFullSize)
             {
-                Location = form_pos;
-                Size = normal_size;
-                is_full_size = false;
-                NativeMethods.ShowCursor(true);
+                SetSize(form_pos, normal_size, true);
             }
             else
             {
                 form_pos = Location;
-                Location = new Point(0, 0);
-                Size = full_size;
-                is_full_size = true;
-                NativeMethods.ShowCursor(false);
+                SetSize(new Point(0, 0), full_size, false);
             }
+
+            isFullSize = !isFullSize;
 
             pictureBox1.Image?.Dispose();
             graphics?.Dispose();
@@ -244,51 +247,43 @@ namespace Stars
 
             if (e.Control && e.KeyCode == Keys.Up)
             {
-                VolumeMusicUp();
+                VolumeUp();
                 return;
             }
 
             if (e.Control && e.KeyCode == Keys.Down)
             {
-                VolumeMusicDown();
+                VolumeDown();
                 return;
             }
 
             switch (e.KeyCode)
             {
                 case Keys.Space:
+                    if (timer1.Enabled)
                     {
-                        if (timer1.Enabled)
-                        {
-                            timer1.Stop();
-                            if (mPlayer.PlayState == Media.MPPlayStateConstants.mpPlaying)
-                            {
-                                mPlayer.Pause();
-                            }
-                        }
-                        else
-                        {
-                            timer1.Start();
-                            if (mPlayer.PlayState != Media.MPPlayStateConstants.mpPlaying)
-                            {
-                                mPlayer.Play();
-                            }
-                        }
-                    }
-                    break;
-                case Keys.Escape:
-                    Application.Exit();
-                    break;
-                case Keys.M:
-                    if (is_mute)
-                    {
-                        Normal_Volume();
+                        timer1.Stop();
+                        mPlayer.Pause();
                     }
                     else
                     {
-                        Mute_Volume();
+                        timer1.Start();
+                        mPlayer.Play();
                     }
-                    is_mute = !is_mute;
+                    break;
+                case Keys.M:
+                    if (isMute)
+                    {
+                        NormalVolume();
+                    }
+                    else
+                    {
+                        MuteVolume();
+                    }
+                    isMute = !isMute;
+                    break;
+                case Keys.Escape:
+                    Application.Exit();
                     break;
                 case Keys.N:
                     NativeMethods.ShowCursor(false);
@@ -344,23 +339,25 @@ namespace Stars
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (!is_full_size)
+            if (!isFullSize && e.Button == MouseButtons.Left)
             {
-                if (e.Button == MouseButtons.Left)
-                {
-                    old_mouse_pos = e.Location;
-                }
-
-                if (e.Button == MouseButtons.Right)
-                {
-                    contextMenuStrip1.Show(MousePosition);
-                }
+                old_mouse_pos = e.Location;
+            }
+            if (e.Button == MouseButtons.Right)
+            {
+                contextMenuStrip1.Show(MousePosition);
             }
         }
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left && !is_full_size)
+            if (isFullSize && !timer2.Enabled)
+            {
+                NativeMethods.ShowCursor(true);
+                timer2.Start();
+            }
+
+            if (e.Button == MouseButtons.Left && !isFullSize)
             {
                 int dx = e.Location.X - old_mouse_pos.X;
                 int dy = e.Location.Y - old_mouse_pos.Y;
@@ -375,22 +372,16 @@ namespace Stars
 
         private void timer2_Tick(object sender, EventArgs e)
         {
-            if (show_mouse_time > 3)
+            if (showMouseTime < 5)
             {
-                timer2.Stop();
-                show_mouse_time = 0;
-                NativeMethods.ShowCursor(false);
+                showMouseTime++;
             }
             else
             {
-                show_mouse_time++;
+                timer2.Stop();
+                showMouseTime = 0;
+                NativeMethods.ShowCursor(false);
             }
         }
-    }
-
-    static class NativeMethods
-    {
-        [DllImport("user32.dll", EntryPoint = "ShowCursor")]
-        internal static extern int ShowCursor(bool show);
     }
 }
