@@ -3,8 +3,6 @@ using System.IO;
 using Stars.Source;
 using System.Drawing;
 using System.Windows.Forms;
-using Media = MediaPlayer;
-
 
 namespace Stars
 {
@@ -17,7 +15,6 @@ namespace Stars
             full_size = Screen.PrimaryScreen.Bounds.Size;
             form_pos = Location;
             MouseWheel += Form1_MouseWheel;
-            mPlayer.PlayCount = int.MaxValue; // Повторять 2 147 483 647 раз 
         }
 
         enum Direction
@@ -45,43 +42,18 @@ namespace Stars
         sbyte speed = 5;
         sbyte showMouseTime = 0;
         bool shake = false;
-        bool isMute = false;
         bool isFullSize = false;
-        Media.MediaPlayer mPlayer = new Media.MediaPlayer();
-
-        private void VolumeUp()
-        {
-            int vol = mPlayer.Volume + 100;
-            if (vol > 0) vol = 0;
-            mPlayer.Volume = vol;
-        }
-
-        private void VolumeDown()
-        {
-            int vol = mPlayer.Volume - 100;
-            if (vol < -6000) vol = -6000;
-            mPlayer.Volume = vol;
-        }
-
-        private void NormalVolume()
-        {
-            mPlayer.Volume = 0;
-        }
-
-        private void MuteVolume()
-        {
-            mPlayer.Volume = -6000;
-        }
+        MediaPlayer mPlayer = new MediaPlayer();
 
         private void Form1_MouseWheel(object sender, MouseEventArgs e)
         {
             if (e.Delta > 0)
             {
-                VolumeUp();
+                mPlayer.Volume += 100;
             }
             else if (e.Delta < 0)
             {
-                VolumeDown();
+                mPlayer.Volume -= 100; 
             }
         }
 
@@ -247,13 +219,13 @@ namespace Stars
 
             if (e.Control && e.KeyCode == Keys.Up)
             {
-                VolumeUp();
+                mPlayer.Volume += 100;
                 return;
             }
 
             if (e.Control && e.KeyCode == Keys.Down)
             {
-                VolumeDown();
+                mPlayer.Volume -= 100;
                 return;
             }
 
@@ -272,15 +244,7 @@ namespace Stars
                     }
                     break;
                 case Keys.M:
-                    if (isMute)
-                    {
-                        NormalVolume();
-                    }
-                    else
-                    {
-                        MuteVolume();
-                    }
-                    isMute = !isMute;
+                    mPlayer.Mute();
                     break;
                 case Keys.Escape:
                     Application.Exit();
