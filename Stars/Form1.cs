@@ -37,11 +37,11 @@ namespace Stars
         Size normal_size, full_size;
         Point form_pos, old_mouse_pos;
         Star[] stars = new Star[15000];
-        uint timeFly = 0;
-        uint timeBias = 50;
-        uint period = 300;
-        sbyte speed = 5;
-        sbyte showMouseTime = 0;
+        int flyTime = 0;
+        int changeWayTime = 50;
+        int interval = 300;
+        int speed = 5;
+        int showMouseTime = 0;
         bool shake = false;
         bool isFullSize = false;
         Media_Player player = new Media_Player();
@@ -60,7 +60,7 @@ namespace Stars
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (graphics == null) return;
+            flyTime++;
             graphics.Clear(Color.Black);
 
             foreach (Star star in stars)
@@ -70,23 +70,22 @@ namespace Stars
             }
 
             pictureBox1.Invalidate();
-            timeFly++;
 
-            if (timeFly + timeBias > period)
+            if (flyTime > interval - changeWayTime)
             {
-                if (shake || way == Direction.None)
+                if (way == Direction.None || shake)
                 {
                     way = (Direction)(shake ? rnd.Next(1, 5) : rnd.Next(1, 9));
                 }
             }
 
-            if (timeFly > period)
+            if (flyTime > interval)
             {
                 way = Direction.None;
-                speed = (sbyte)rnd.Next(-1, 20);
-                timeFly = 0;
-                timeBias = (uint)rnd.Next(20, 60);
-                period = (uint)(100 * rnd.Next(1, 15));
+                speed = rnd.Next(-1, 20);
+                flyTime = 0;
+                changeWayTime = rnd.Next(20, 60);
+                interval = 100 * rnd.Next(1, 15);
                 shake = rnd.Next(100) > 70 ? true : false;
             }
         }
@@ -140,11 +139,14 @@ namespace Stars
 
         private void DrawStar(Star star)
         {
-            if (graphics == null) return;
+            if (graphics == null)
+            {
+                return;
+            }
 
             float size = Map(star.Z, 0, Width, 5, 0);
-            float x = Map(star.X / star.Z, 0, 1, 0, Width) + Width / 2;
-            float y = Map(star.Y / star.Z, 0, 1, 0, Height) + Height / 2;
+            float x = Map(star.X / star.Z, 0, 1, 0, Width) + (Width / 2);
+            float y = Map(star.Y / star.Z, 0, 1, 0, Height) + (Height / 2);
 
             byte R = (byte)Map(star.Z, 0, Width, 255, 0);
             byte G = 255;
