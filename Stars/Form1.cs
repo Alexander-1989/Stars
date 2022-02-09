@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Stars.Source;
+using Stars.Media;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -43,7 +44,7 @@ namespace Stars
         sbyte showMouseTime = 0;
         bool shake = false;
         bool isFullSize = false;
-        MediaPlayer mPlayer = new MediaPlayer();
+        Media_Player mPlayer = new Media_Player();
 
         private void Form1_MouseWheel(object sender, MouseEventArgs e)
         {

@@ -1,11 +1,10 @@
 ﻿using System.IO;
-using Media = MediaPlayer;
 
-namespace Stars
+namespace Stars.Media
 {
-    class MediaPlayer
+    class Media_Player
     {
-        readonly Media.MediaPlayer _mPlayer = new Media.MediaPlayer();
+        readonly MediaPlayer.MediaPlayer _mPlayer = new MediaPlayer.MediaPlayer();
         const int _minVolume = -6000;
         const int _maxVolume = 0;
         int _lastVolume = 0;
@@ -27,9 +26,9 @@ namespace Stars
             }
         }
 
-        public MediaPlayer() : this(string.Empty) { }
+        public Media_Player() : this("") { }
 
-        public MediaPlayer(string fileName)
+        public Media_Player(string fileName)
         {
             _mPlayer.PlayCount = int.MaxValue;
             FileName = fileName;
@@ -51,7 +50,7 @@ namespace Stars
 
         public void Play()
         {
-            if (_mPlayer.PlayState != Media.MPPlayStateConstants.mpPlaying)
+            if (_mPlayer.PlayState != MediaPlayer.MPPlayStateConstants.mpPlaying)
             {
                 _mPlayer.Play();
             }
@@ -59,7 +58,7 @@ namespace Stars
 
         public void Stop()
         {
-            if (_mPlayer.PlayState != Media.MPPlayStateConstants.mpStopped)
+            if (_mPlayer.PlayState != MediaPlayer.MPPlayStateConstants.mpStopped)
             {
                 _mPlayer.Stop();
             }
@@ -67,7 +66,7 @@ namespace Stars
 
         public void Pause()
         {
-            if (_mPlayer.PlayState != Media.MPPlayStateConstants.mpPaused)
+            if (_mPlayer.PlayState != MediaPlayer.MPPlayStateConstants.mpPaused)
             {
                 _mPlayer.Pause();
             }
