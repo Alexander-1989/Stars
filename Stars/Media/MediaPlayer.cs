@@ -4,9 +4,9 @@ namespace Stars.Media
 {
     class Media_Player
     {
-        readonly MediaPlayer.MediaPlayer _mPlayer = new MediaPlayer.MediaPlayer();
-        const int _minVolume = -6000;
+        readonly MediaPlayer.MediaPlayer _player = new MediaPlayer.MediaPlayer();
         const int _maxVolume = 0;
+        const int _minVolume = -6000;
         int _lastVolume = 0;
         bool _isMute = false;
         public string FileName { get; set; }
@@ -14,13 +14,13 @@ namespace Stars.Media
         {
             get
             {
-                return _mPlayer.Volume;
+                return _player.Volume;
             }
             set
             {
                 if (value >= _minVolume && value <= _maxVolume)
                 {
-                    _mPlayer.Volume = value;
+                    _player.Volume = value;
                     _lastVolume = value;
                 }
             }
@@ -30,7 +30,7 @@ namespace Stars.Media
 
         public Media_Player(string fileName)
         {
-            _mPlayer.PlayCount = int.MaxValue;
+            _player.PlayCount = int.MaxValue;
             FileName = fileName;
         }
 
@@ -44,31 +44,31 @@ namespace Stars.Media
             if (!string.IsNullOrEmpty(fileName) && File.Exists(fileName))
             {
                 FileName = fileName;
-                _mPlayer.Open(fileName);
+                _player.Open(fileName);
             }
         }
 
         public void Play()
         {
-            if (_mPlayer.PlayState != MediaPlayer.MPPlayStateConstants.mpPlaying)
+            if (_player.PlayState != MediaPlayer.MPPlayStateConstants.mpPlaying)
             {
-                _mPlayer.Play();
+                _player.Play();
             }
         }
 
         public void Stop()
         {
-            if (_mPlayer.PlayState != MediaPlayer.MPPlayStateConstants.mpStopped)
+            if (_player.PlayState != MediaPlayer.MPPlayStateConstants.mpStopped)
             {
-                _mPlayer.Stop();
+                _player.Stop();
             }
         }
 
         public void Pause()
         {
-            if (_mPlayer.PlayState != MediaPlayer.MPPlayStateConstants.mpPaused)
+            if (_player.PlayState != MediaPlayer.MPPlayStateConstants.mpPaused)
             {
-                _mPlayer.Pause();
+                _player.Pause();
             }
         }
 
@@ -76,11 +76,11 @@ namespace Stars.Media
         {
             if (_isMute)
             {
-                _mPlayer.Volume = _lastVolume;
+                _player.Volume = _lastVolume;
             }
             else
             {
-                _mPlayer.Volume = _minVolume;
+                _player.Volume = _minVolume;
             }
             _isMute = !_isMute;
         }

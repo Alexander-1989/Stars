@@ -31,12 +31,12 @@ namespace Stars
             RotationRight
         }
 
+        Direction way = Direction.None;
         Graphics graphics = null;
-        static Random rnd = new Random();
+        Random rnd = new Random();
         Size normal_size, full_size;
         Point form_pos, old_mouse_pos;
         Star[] stars = new Star[15000];
-        Direction way = Direction.None;
         uint timeFly = 0;
         uint timeBias = 50;
         uint period = 300;
@@ -44,17 +44,17 @@ namespace Stars
         sbyte showMouseTime = 0;
         bool shake = false;
         bool isFullSize = false;
-        Media_Player mPlayer = new Media_Player();
+        Media_Player player = new Media_Player();
 
         private void Form1_MouseWheel(object sender, MouseEventArgs e)
         {
             if (e.Delta > 0)
             {
-                mPlayer.Volume += 100;
+                player.Volume += 100;
             }
             else if (e.Delta < 0)
             {
-                mPlayer.Volume -= 100; 
+                player.Volume -= 100; 
             }
         }
 
@@ -165,8 +165,8 @@ namespace Stars
             string sound_file = ".\\Music\\music.mp3";
             if (File.Exists(sound_file))
             {
-                mPlayer.Open(sound_file);
-                mPlayer.Play();
+                player.Open(sound_file);
+                player.Play();
             }
 
             for (int i = 0; i < stars.Length; ++i)
@@ -220,13 +220,13 @@ namespace Stars
 
             if (e.Control && e.KeyCode == Keys.Up)
             {
-                mPlayer.Volume += 100;
+                player.Volume += 100;
                 return;
             }
 
             if (e.Control && e.KeyCode == Keys.Down)
             {
-                mPlayer.Volume -= 100;
+                player.Volume -= 100;
                 return;
             }
 
@@ -236,16 +236,16 @@ namespace Stars
                     if (timer1.Enabled)
                     {
                         timer1.Stop();
-                        mPlayer.Pause();
+                        player.Pause();
                     }
                     else
                     {
                         timer1.Start();
-                        mPlayer.Play();
+                        player.Play();
                     }
                     break;
                 case Keys.M:
-                    mPlayer.Mute();
+                    player.Mute();
                     break;
                 case Keys.Escape:
                     Application.Exit();
