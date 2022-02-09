@@ -36,7 +36,10 @@ namespace Stars.Media
 
         public void Open()
         {
-            Open(FileName);
+            if (!string.IsNullOrEmpty(FileName))
+            {
+                Open(FileName);
+            }
         }
 
         public void Open(string fileName)

@@ -146,7 +146,9 @@ namespace Stars
             float x = Map(star.X / star.Z, 0, 1, 0, Width) + Width / 2;
             float y = Map(star.Y / star.Z, 0, 1, 0, Height) + Height / 2;
 
-            byte B = 255, G = 255, R = (byte)Map(star.Z, 0, Width, 255, 0);
+            byte R = (byte)Map(star.Z, 0, Width, 255, 0);
+            byte G = 255;
+            byte B = 255;
             Color color = Color.FromArgb(R, G, B);
 
             using (SolidBrush sb = new SolidBrush(color))
@@ -162,7 +164,7 @@ namespace Stars
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            string sound_file = ".\\Music\\music.mp3";
+            string sound_file = Path.Combine(Environment.CurrentDirectory, "Music\\music.mp3");
             if (File.Exists(sound_file))
             {
                 player.Open(sound_file);
