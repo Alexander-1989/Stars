@@ -149,11 +149,10 @@ namespace Stars
             byte R = (byte)Map(star.Z, 0, Width, 255, 0);
             byte G = 255;
             byte B = 255;
-            Color color = Color.FromArgb(R, G, B);
 
-            using (SolidBrush sb = new SolidBrush(color))
+            using (SolidBrush solidBrush = new SolidBrush(Color.FromArgb(R, G, B)))
             {
-                graphics.FillEllipse(sb, x, y, size, size);
+                graphics.FillEllipse(solidBrush, x, y, size, size);
             }
         }
 
