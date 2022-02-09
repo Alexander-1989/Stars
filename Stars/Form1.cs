@@ -33,7 +33,7 @@ namespace Stars
 
         Direction way = Direction.None;
         Graphics graphics = null;
-        Random rnd = new Random();
+        static Random rnd = new Random();
         Size normal_size, full_size;
         Point form_pos, old_mouse_pos;
         Star[] stars = new Star[15000];
@@ -73,7 +73,7 @@ namespace Stars
 
             if (flyTime > interval - changeWayTime)
             {
-                if (way == Direction.None || shake)
+                if (shake || way == Direction.None)
                 {
                     way = (Direction)(shake ? rnd.Next(1, 5) : rnd.Next(1, 9));
                 }
@@ -88,6 +88,11 @@ namespace Stars
                 interval = 100 * rnd.Next(1, 15);
                 shake = rnd.Next(100) > 70 ? true : false;
             }
+        }
+
+        private float Map(float n, float start1, float stop1, float start2, float stop2)
+        {
+            return ((n - start1) * (stop2 - start2) / (stop1 - start1)) + start2;
         }
 
         private void MoveStar(Star star)
@@ -132,17 +137,8 @@ namespace Stars
             }
         }
 
-        private float Map(float n, float start1, float stop1, float start2, float stop2)
-        {
-            return ((n - start1) * (stop2 - start2) / (stop1 - start1)) + start2;
-        }
-
         private void DrawStar(Star star)
         {
-            if (graphics == null)
-            {
-                return;
-            }
 
             float size = Map(star.Z, 0, Width, 5, 0);
             float x = Map(star.X / star.Z, 0, 1, 0, Width) + (Width / 2);
