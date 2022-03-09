@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace Stars.Media
+﻿namespace Stars.Media
 {
     class Media_Player
     {
@@ -44,7 +42,7 @@ namespace Stars.Media
 
         public void Open(string fileName)
         {
-            if (!string.IsNullOrEmpty(fileName) && File.Exists(fileName))
+            if (!string.IsNullOrEmpty(fileName) && System.IO.File.Exists(fileName))
             {
                 FileName = fileName;
                 _player.Open(fileName);
