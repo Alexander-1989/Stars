@@ -161,13 +161,6 @@ namespace Stars
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            string sound_file = Path.Combine(Environment.CurrentDirectory, "Music\\music.mp3");
-            if (File.Exists(sound_file))
-            {
-                player.Open(sound_file);
-                player.Play();
-            }
-
             for (int i = 0; i < stars.Length; ++i)
             {
                 stars[i] = new Star()
@@ -180,6 +173,8 @@ namespace Stars
 
             ChangeSize();
             timer1.Start();
+            player.Open(Path.Combine(Environment.CurrentDirectory, "Music\\music.mp3"));
+            player.Play();
         }
 
         private void SetSize(Point location, Size size, bool showCursor)

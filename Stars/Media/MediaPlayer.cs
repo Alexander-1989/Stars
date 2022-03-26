@@ -7,13 +7,11 @@
         const int _minVolume = -6000;
         int _lastVolume = 0;
         bool _isMute = false;
+        public bool IsLoadCompleted { get; set; }
         public string FileName { get; set; }
         public int Volume
         {
-            get
-            {
-                return _player.Volume;
-            }
+            get { return _player.Volume; }
             set
             {
                 if (value >= _minVolume && value <= _maxVolume)
@@ -34,10 +32,7 @@
 
         public void Open()
         {
-            if (!string.IsNullOrEmpty(FileName))
-            {
-                Open(FileName);
-            }
+            Open(FileName);
         }
 
         public void Open(string fileName)
@@ -46,6 +41,7 @@
             {
                 FileName = fileName;
                 _player.Open(fileName);
+                IsLoadCompleted = true;
             }
         }
 
