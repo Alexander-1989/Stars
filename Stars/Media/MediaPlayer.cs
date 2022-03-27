@@ -7,7 +7,6 @@
         const int _minVolume = -6000;
         int _lastVolume = 0;
         bool _isMute = false;
-        public bool IsLoadCompleted { get; set; }
         public string FileName { get; set; }
         public int Volume
         {
@@ -35,13 +34,15 @@
             Open(FileName);
         }
 
+        /// <summary>
+        /// Открывает файл для воспроизведения
+        /// </summary>
         public void Open(string fileName)
         {
             if (!string.IsNullOrEmpty(fileName) && System.IO.File.Exists(fileName))
             {
                 FileName = fileName;
                 _player.Open(fileName);
-                IsLoadCompleted = true;
             }
         }
 

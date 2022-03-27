@@ -198,8 +198,8 @@ namespace Stars
 
             isFullSize = !isFullSize;
 
-            pictureBox1.Image?.Dispose();
             graphics?.Dispose();
+            pictureBox1.Image?.Dispose();
             pictureBox1.Image = new Bitmap(Width, Height);
             graphics = Graphics.FromImage(pictureBox1.Image);
         }
