@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
-using Stars.Source;
 using Stars.Media;
+using Stars.Source;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -61,15 +61,13 @@ namespace Stars
         private void timer1_Tick(object sender, EventArgs e)
         {
             flyTime++;
-            graphics.Clear(Color.Black);
+            graphics?.Clear(Color.Black);
 
             foreach (Star star in stars)
             {
                 DrawStar(star);
                 MoveStar(star);
             }
-
-            pictureBox1.Invalidate();
 
             if (flyTime > interval - changeWayTime)
             {
@@ -88,6 +86,8 @@ namespace Stars
                 interval = 100 * rnd.Next(1, 15);
                 shake = rnd.Next(100) > 70 ? true : false;
             }
+
+            pictureBox1.Invalidate();
         }
 
         private float Map(float n, float start1, float stop1, float start2, float stop2)
@@ -161,7 +161,7 @@ namespace Stars
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            for (int i = 0; i < stars.Length; ++i)
+            for (int i = 0; i < stars.Length; i++)
             {
                 stars[i] = new Star()
                 {
