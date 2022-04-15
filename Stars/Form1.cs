@@ -116,16 +116,16 @@ namespace Stars
                     star.X -= step;
                     break;
                 case Direction.RotationUp:
-                    star.Y = (float)(star.X * Math.Sin(AngleToRadians(alpha)) + star.Y * Math.Cos(AngleToRadians(alpha)));
+                    star.Y = (float)(star.X * Math.Sin(DegreesToRadians(alpha)) + star.Y * Math.Cos(DegreesToRadians(alpha)));
                     break;
                 case Direction.RotationDown:
-                    star.Y = (float)(-star.X * Math.Sin(AngleToRadians(alpha)) + star.Y * Math.Cos(AngleToRadians(alpha)));
+                    star.Y = (float)(-star.X * Math.Sin(DegreesToRadians(alpha)) + star.Y * Math.Cos(DegreesToRadians(alpha)));
                     break;
                 case Direction.RotationLeft:
-                    star.X = (float)(star.X * Math.Cos(AngleToRadians(alpha)) - star.Y * Math.Sin(AngleToRadians(alpha)));
+                    star.X = (float)(star.X * Math.Cos(DegreesToRadians(alpha)) - star.Y * Math.Sin(DegreesToRadians(alpha)));
                     break;
                 case Direction.RotationRight:
-                    star.X = (float)(star.X * Math.Cos(AngleToRadians(alpha)) + star.Y * Math.Sin(AngleToRadians(alpha)));
+                    star.X = (float)(star.X * Math.Cos(DegreesToRadians(alpha)) + star.Y * Math.Sin(DegreesToRadians(alpha)));
                     break;
             }
 
@@ -155,7 +155,7 @@ namespace Stars
             }
         }
 
-        private double AngleToRadians(double angle)
+        private double DegreesToRadians(double angle)
         {
             return angle * Math.PI / 180;
         }

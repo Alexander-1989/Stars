@@ -2,7 +2,7 @@
 {
     class Media_Player
     {
-        private readonly MediaPlayer.MediaPlayer _player = new MediaPlayer.MediaPlayer();
+        private readonly MediaPlayer.MediaPlayer player = new MediaPlayer.MediaPlayer();
         private const int maxVolume = 0;
         private const int minVolume = -6000;
         private int lastVolume = 0;
@@ -10,12 +10,15 @@
         public string FileName { get; set; }
         public int Volume
         {
-            get { return _player.Volume; }
+            get
+            {
+                return player.Volume;
+            }
             set
             {
                 if (value >= minVolume && value <= maxVolume)
                 {
-                    _player.Volume = value;
+                    player.Volume = value;
                     lastVolume = value;
                 }
             }
@@ -25,7 +28,7 @@
 
         public Media_Player(string fileName)
         {
-            _player.PlayCount = int.MaxValue;
+            player.PlayCount = int.MaxValue;
             FileName = fileName;
         }
 
@@ -41,8 +44,8 @@
         {
             if (!string.IsNullOrEmpty(fileName) && System.IO.File.Exists(fileName))
             {
-                this.FileName = fileName;
-                _player.Open(fileName);
+                FileName = fileName;
+                player.Open(fileName);
             }
         }
 
@@ -51,25 +54,25 @@
         /// </summary>
         public void Play()
         {
-            if (_player.PlayState != MediaPlayer.MPPlayStateConstants.mpPlaying)
+            if (player.PlayState != MediaPlayer.MPPlayStateConstants.mpPlaying)
             {
-                _player.Play();
+                player.Play();
             }
         }
 
         public void Stop()
         {
-            if (_player.PlayState != MediaPlayer.MPPlayStateConstants.mpStopped)
+            if (player.PlayState != MediaPlayer.MPPlayStateConstants.mpStopped)
             {
-                _player.Stop();
+                player.Stop();
             }
         }
 
         public void Pause()
         {
-            if (_player.PlayState != MediaPlayer.MPPlayStateConstants.mpPaused)
+            if (player.PlayState != MediaPlayer.MPPlayStateConstants.mpPaused)
             {
-                _player.Pause();
+                player.Pause();
             }
         }
 
@@ -77,11 +80,11 @@
         {
             if (isMute)
             {
-                _player.Volume = lastVolume;
+                player.Volume = lastVolume;
             }
             else
             {
-                _player.Volume = minVolume;
+                player.Volume = minVolume;
             }
             isMute = !isMute;
         }
