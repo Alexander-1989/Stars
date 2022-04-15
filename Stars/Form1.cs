@@ -1,8 +1,8 @@
-﻿using System;
-using System.IO;
-using Stars.Media;
+﻿using Stars.Media;
 using Stars.Source;
+using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace Stars
@@ -12,13 +12,14 @@ namespace Stars
         public Form1()
         {
             InitializeComponent();
-            normal_size = Size;
-            full_size = Screen.PrimaryScreen.Bounds.Size;
-            form_pos = Location;
+            normalSize = Size;
+            fullSize = Screen.PrimaryScreen.Bounds.Size;
+            formPosition = Location;
+            defPosition = new Point(0, 0);
             MouseWheel += Form1_MouseWheel;
         }
 
-        enum Direction
+        private enum Direction
         {
             None,
             Up,
@@ -31,20 +32,20 @@ namespace Stars
             RotationRight
         }
 
-        Direction way = Direction.None;
-        Graphics graphics = null;
-        static Random rnd = new Random();
-        Size normal_size, full_size;
-        Point form_pos, old_mouse_pos;
-        Star[] stars = new Star[15000];
-        int flyTime = 0;
-        int changeWayTime = 50;
-        int interval = 300;
-        int speed = 5;
-        int showMouseTime = 0;
-        bool shake = false;
-        bool isFullSize = false;
-        Media_Player player = new Media_Player();
+        private Direction way = Direction.None;
+        private Graphics graphics = null;
+        private Size normalSize, fullSize;
+        private Point formPosition, oldMousePosition, defPosition;
+        private int flyTime = 0;
+        private int changeWayTime = 50;
+        private int interval = 300;
+        private int speed = 5;
+        private int showMouseTime = 0;
+        private bool shake = false;
+        private bool isFullSize = false;
+        private readonly Star[] stars = new Star[15000];
+        private readonly Media_Player player = new Media_Player();
+        private readonly Random random = new Random();
 
         private void Form1_MouseWheel(object sender, MouseEventArgs e)
         {
@@ -52,9 +53,9 @@ namespace Stars
             {
                 player.Volume += 100;
             }
-            else if (e.Delta < 0)
+            else
             {
-                player.Volume -= 100; 
+                player.Volume -= 100;
             }
         }
 
@@ -73,18 +74,18 @@ namespace Stars
             {
                 if (shake || way == Direction.None)
                 {
-                    way = (Direction)(shake ? rnd.Next(1, 5) : rnd.Next(1, 9));
+                    way = (Direction)(shake ? random.Next(1, 5) : random.Next(1, 9));
                 }
             }
 
             if (flyTime > interval)
             {
                 way = Direction.None;
-                speed = rnd.Next(-1, 20);
+                speed = random.Next(-1, 20);
                 flyTime = 0;
-                changeWayTime = rnd.Next(20, 60);
-                interval = 100 * rnd.Next(1, 15);
-                shake = rnd.Next(100) > 70 ? true : false;
+                changeWayTime = random.Next(20, 60);
+                interval = 100 * random.Next(1, 15);
+                shake = random.Next(100) > 70;
             }
 
             pictureBox1.Invalidate();
@@ -131,9 +132,9 @@ namespace Stars
             star.Z -= speed;
             if (star.Z < 0)
             {
-                star.X = rnd.Next(-Width, Width);
-                star.Y = rnd.Next(-Height, Height);
-                star.Z = rnd.Next(0, Width);
+                star.X = random.Next(-Width, Width);
+                star.Y = random.Next(-Height, Height);
+                star.Z = random.Next(0, Width);
             }
         }
 
@@ -165,9 +166,9 @@ namespace Stars
             {
                 stars[i] = new Star()
                 {
-                    X = rnd.Next(-Width, Width),
-                    Y = rnd.Next(-Height, Height),
-                    Z = rnd.Next(1, Width),
+                    X = random.Next(-Width, Width),
+                    Y = random.Next(-Height, Height),
+                    Z = random.Next(1, Width),
                 };
             }
 
@@ -188,12 +189,12 @@ namespace Stars
         {
             if (isFullSize)
             {
-                SetSize(form_pos, normal_size, true);
+                SetSize(formPosition, normalSize, true);
             }
             else
             {
-                form_pos = Location;
-                SetSize(new Point(0, 0), full_size, false);
+                formPosition = Location;
+                SetSize(defPosition, fullSize, false);
             }
 
             isFullSize = !isFullSize;
@@ -251,7 +252,7 @@ namespace Stars
                     NativeMethods.ShowCursor(true);
                     break;
                 case Keys.G:
-                    way = (Direction)rnd.Next(1, 5);
+                    way = (Direction)random.Next(1, 5);
                     break;
                 case Keys.Up:
                     way = Direction.Up;
@@ -300,7 +301,7 @@ namespace Stars
         {
             if (!isFullSize && e.Button == MouseButtons.Left)
             {
-                old_mouse_pos = e.Location;
+                oldMousePosition = e.Location;
             }
             if (e.Button == MouseButtons.Right)
             {
@@ -318,8 +319,8 @@ namespace Stars
 
             if (e.Button == MouseButtons.Left && !isFullSize)
             {
-                int dx = e.Location.X - old_mouse_pos.X;
-                int dy = e.Location.Y - old_mouse_pos.Y;
+                int dx = e.Location.X - oldMousePosition.X;
+                int dy = e.Location.Y - oldMousePosition.Y;
                 Location = new Point(Location.X + dx, Location.Y + dy);
             }
         }

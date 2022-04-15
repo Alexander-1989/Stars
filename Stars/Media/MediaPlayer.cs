@@ -2,26 +2,26 @@
 {
     class Media_Player
     {
-        readonly MediaPlayer.MediaPlayer _player = new MediaPlayer.MediaPlayer();
-        const int _maxVolume = 0;
-        const int _minVolume = -6000;
-        int _lastVolume = 0;
-        bool _isMute = false;
+        private readonly MediaPlayer.MediaPlayer _player = new MediaPlayer.MediaPlayer();
+        private const int maxVolume = 0;
+        private const int minVolume = -6000;
+        private int lastVolume = 0;
+        private bool isMute = false;
         public string FileName { get; set; }
         public int Volume
         {
             get { return _player.Volume; }
             set
             {
-                if (value >= _minVolume && value <= _maxVolume)
+                if (value >= minVolume && value <= maxVolume)
                 {
                     _player.Volume = value;
-                    _lastVolume = value;
+                    lastVolume = value;
                 }
             }
         }
 
-        public Media_Player() : this("") { }
+        public Media_Player() : this(string.Empty) { }
 
         public Media_Player(string fileName)
         {
@@ -41,11 +41,14 @@
         {
             if (!string.IsNullOrEmpty(fileName) && System.IO.File.Exists(fileName))
             {
-                FileName = fileName;
+                this.FileName = fileName;
                 _player.Open(fileName);
             }
         }
 
+        /// <summary>
+        /// Играет музон
+        /// </summary>
         public void Play()
         {
             if (_player.PlayState != MediaPlayer.MPPlayStateConstants.mpPlaying)
@@ -72,15 +75,15 @@
 
         public void Mute()
         {
-            if (_isMute)
+            if (isMute)
             {
-                _player.Volume = _lastVolume;
+                _player.Volume = lastVolume;
             }
             else
             {
-                _player.Volume = _minVolume;
+                _player.Volume = minVolume;
             }
-            _isMute = !_isMute;
+            isMute = !isMute;
         }
     }
 }

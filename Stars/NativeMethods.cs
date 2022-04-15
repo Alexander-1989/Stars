@@ -4,7 +4,7 @@ namespace Stars
 {
     static class NativeMethods
     {
-        static bool _show = true;
+        private static bool _show = true;
 
         [DllImport("user32.dll", EntryPoint = "ShowCursor")]
         static extern int _showCursor(bool show);
