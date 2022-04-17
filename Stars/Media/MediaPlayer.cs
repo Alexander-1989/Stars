@@ -5,7 +5,7 @@
         private readonly MediaPlayer.MediaPlayer player = null;
         private const int maxVolume = 0;
         private const int minVolume = -6000;
-        private const int interval = 6000;
+        private const int volumeInterval = 6000;
         private int lastVolume = 0;
         private bool isMute = false;
         public string FileName { get; set; }
@@ -13,7 +13,7 @@
         {
             get
             {
-                return 100 * player.Volume / interval + 100;
+                return 100 * player.Volume / volumeInterval + 100;
             }
             set
             {
@@ -30,7 +30,7 @@
                     _value = 0;
                 }
 
-                lastVolume = (interval * _value / 100) - interval;
+                lastVolume = (volumeInterval * _value / 100) - volumeInterval;
                 player.Volume = lastVolume;
             }
         }
