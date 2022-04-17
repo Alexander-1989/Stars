@@ -2,9 +2,10 @@
 {
     class Media_Player
     {
-        private readonly MediaPlayer.MediaPlayer player = new MediaPlayer.MediaPlayer();
+        private readonly MediaPlayer.MediaPlayer player = null;
         private const int maxVolume = 0;
         private const int minVolume = -6000;
+        private const int interval = 6000;
         private int lastVolume = 0;
         private bool isMute = false;
         public string FileName { get; set; }
@@ -12,23 +13,33 @@
         {
             get
             {
-                return player.Volume;
+                return 100 * player.Volume / interval + 100;
             }
             set
             {
-                if (value >= minVolume && value <= maxVolume)
+                int _value = value;
+                if (_value >= 0)
                 {
-                    player.Volume = value;
-                    lastVolume = value;
+                    if (_value > 100)
+                    {
+                        _value = 100;
+                    }
                 }
+                else
+                {
+                    _value = 0;
+                }
+
+                lastVolume = (interval * _value / 100) - interval;
+                player.Volume = lastVolume;
             }
         }
 
-        public Media_Player() : this(string.Empty) { }
+        public Media_Player() : this("") { }
 
         public Media_Player(string fileName)
         {
-            player.PlayCount = int.MaxValue;
+            player = new MediaPlayer.MediaPlayer() { PlayCount = int.MaxValue };
             FileName = fileName;
         }
 
@@ -42,7 +53,7 @@
         /// </summary>
         public void Open(string fileName)
         {
-            if (!string.IsNullOrEmpty(fileName) && System.IO.File.Exists(fileName))
+            if (System.IO.File.Exists(fileName))
             {
                 FileName = fileName;
                 player.Open(fileName);
@@ -76,16 +87,16 @@
             }
         }
 
+        public void SetMaxVolume()
+        {
+            isMute = false;
+            lastVolume = maxVolume;
+            player.Volume = lastVolume;
+        }
+
         public void Mute()
         {
-            if (isMute)
-            {
-                player.Volume = lastVolume;
-            }
-            else
-            {
-                player.Volume = minVolume;
-            }
+            player.Volume = isMute ? lastVolume : minVolume;
             isMute = !isMute;
         }
     }

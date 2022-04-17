@@ -49,13 +49,13 @@ namespace Stars
 
         private void Form1_MouseWheel(object sender, MouseEventArgs e)
         {
-            if (e.Delta > 0)
+            if (e.Delta < 0)
             {
-                player.Volume += 100;
+                player.Volume -= 2;
             }
-            else
+            else if (e.Delta > 0)
             {
-                player.Volume -= 100;
+                player.Volume += 2;
             }
         }
 
@@ -215,13 +215,13 @@ namespace Stars
 
             if (e.Control && e.KeyCode == Keys.Up)
             {
-                player.Volume += 100;
+                player.Volume += 5;
                 return;
             }
 
             if (e.Control && e.KeyCode == Keys.Down)
             {
-                player.Volume -= 100;
+                player.Volume -= 5;
                 return;
             }
 
@@ -246,9 +246,12 @@ namespace Stars
                     Application.Exit();
                     break;
                 case Keys.N:
-                    NativeMethods.ShowCursor(false);
+                    player.SetMaxVolume();
                     break;
                 case Keys.B:
+                    NativeMethods.ShowCursor(false);
+                    break;
+                case Keys.V:
                     NativeMethods.ShowCursor(true);
                     break;
                 case Keys.G:
