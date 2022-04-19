@@ -1,13 +1,11 @@
 ﻿namespace Stars.Media
 {
-    class Media_Player
+    internal class Media_Player
     {
-        private readonly MediaPlayer.MediaPlayer player = null;
-        private const int maxVolume = 0;
-        private const int minVolume = -6000;
-        private const int volumeInterval = 6000;
-        private int lastVolume = 0;
-        private bool isMute = false;
+        private readonly MediaPlayer.MediaPlayer player;
+        private const int volumeInterval = 5000;
+        private int lastVolume;
+        private bool isMute;
         public string FileName { get; set; }
         public int Volume
         {
@@ -18,7 +16,7 @@
             set
             {
                 int _value = value;
-                if (_value >= 0)
+                if (value >= 0)
                 {
                     if (_value > 100)
                     {
@@ -29,9 +27,7 @@
                 {
                     _value = 0;
                 }
-
-                lastVolume = (volumeInterval * _value / 100) - volumeInterval;
-                player.Volume = lastVolume;
+                player.Volume = (volumeInterval * _value / 100) - volumeInterval;
             }
         }
 
@@ -90,13 +86,20 @@
         public void SetMaxVolume()
         {
             isMute = false;
-            lastVolume = maxVolume;
-            player.Volume = lastVolume;
+            Volume = 100;
         }
 
         public void Mute()
         {
-            player.Volume = isMute ? lastVolume : minVolume;
+            if (isMute)
+            {
+                Volume = lastVolume;
+            }
+            else
+            {
+                lastVolume = Volume;
+                Volume = 0;
+            }
             isMute = !isMute;
         }
     }

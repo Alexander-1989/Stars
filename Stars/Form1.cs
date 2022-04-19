@@ -1,9 +1,9 @@
-﻿using Stars.Media;
-using Stars.Source;
-using System;
+﻿using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using Stars.Media;
+using Stars.Source;
 
 namespace Stars
 {
@@ -19,33 +19,21 @@ namespace Stars
             MouseWheel += Form1_MouseWheel;
         }
 
-        private enum Direction
-        {
-            None,
-            Up,
-            Down,
-            Left,
-            Right,
-            RotationUp,
-            RotationDown,
-            RotationLeft,
-            RotationRight
-        }
-
         private Direction way = Direction.None;
         private Graphics graphics = null;
         private Size normalSize, fullSize;
         private Point formPosition, oldMousePosition, defPosition;
-        private int flyTime = 0;
-        private int changeWayTime = 50;
-        private int interval = 300;
+        private int flyInterval = 0;
+        private int changeWayInterval = 50;
+        private int fullInterval = 300;
         private int speed = 5;
-        private int showMouseTime = 0;
+        private int showMouseInterval = 0;
         private bool shake = false;
         private bool isFullSize = false;
         private readonly Star[] stars = new Star[15000];
         private readonly Media_Player player = new Media_Player();
         private readonly Random random = new Random();
+
 
         private void Form1_MouseWheel(object sender, MouseEventArgs e)
         {
@@ -59,9 +47,9 @@ namespace Stars
             }
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
+        private void flyTimer_Tick(object sender, EventArgs e)
         {
-            flyTime++;
+            flyInterval++;
             graphics?.Clear(Color.Black);
 
             foreach (Star star in stars)
@@ -70,7 +58,7 @@ namespace Stars
                 MoveStar(star);
             }
 
-            if (flyTime > interval - changeWayTime)
+            if (flyInterval > fullInterval - changeWayInterval)
             {
                 if (shake || way == Direction.None)
                 {
@@ -78,13 +66,13 @@ namespace Stars
                 }
             }
 
-            if (flyTime > interval)
+            if (flyInterval > fullInterval)
             {
                 way = Direction.None;
                 speed = random.Next(-1, 20);
-                flyTime = 0;
-                changeWayTime = random.Next(20, 60);
-                interval = 100 * random.Next(1, 15);
+                flyInterval = 0;
+                changeWayInterval = random.Next(20, 60);
+                fullInterval = 100 * random.Next(1, 15);
                 shake = random.Next(100) > 70;
             }
 
@@ -96,10 +84,15 @@ namespace Stars
             return ((n - start1) * (stop2 - start2) / (stop1 - start1)) + start2;
         }
 
+        private float Map(float point, Line from, Line to)
+        {
+            return ((point - from.Start) * to.Length / from.Length) + to.Start;
+        }
+
         private void MoveStar(Star star)
         {
-            double alpha = 2;
-            float step = 10;
+            const double angle = 2;
+            const float step = 10;
 
             switch (way)
             {
@@ -116,16 +109,16 @@ namespace Stars
                     star.X -= step;
                     break;
                 case Direction.RotationUp:
-                    star.Y = (float)(star.X * Math.Sin(DegreesToRadians(alpha)) + star.Y * Math.Cos(DegreesToRadians(alpha)));
+                    star.Y = (float)(star.X * Math.Sin(DegreesToRadians(angle)) + star.Y * Math.Cos(DegreesToRadians(angle)));
                     break;
                 case Direction.RotationDown:
-                    star.Y = (float)(-star.X * Math.Sin(DegreesToRadians(alpha)) + star.Y * Math.Cos(DegreesToRadians(alpha)));
+                    star.Y = (float)(-star.X * Math.Sin(DegreesToRadians(angle)) + star.Y * Math.Cos(DegreesToRadians(angle)));
                     break;
                 case Direction.RotationLeft:
-                    star.X = (float)(star.X * Math.Cos(DegreesToRadians(alpha)) - star.Y * Math.Sin(DegreesToRadians(alpha)));
+                    star.X = (float)(star.X * Math.Cos(DegreesToRadians(angle)) - star.Y * Math.Sin(DegreesToRadians(angle)));
                     break;
                 case Direction.RotationRight:
-                    star.X = (float)(star.X * Math.Cos(DegreesToRadians(alpha)) + star.Y * Math.Sin(DegreesToRadians(alpha)));
+                    star.X = (float)(star.X * Math.Cos(DegreesToRadians(angle)) + star.Y * Math.Sin(DegreesToRadians(angle)));
                     break;
             }
 
@@ -140,18 +133,25 @@ namespace Stars
 
         private void DrawStar(Star star)
         {
+            //float size = Map(star.Z, 0, Width, 5, 0);
+            //float x = Map(star.X / star.Z, 0, 1, 0, Width) + (Width / 2);
+            //float y = Map(star.Y / star.Z, 0, 1, 0, Height) + (Height / 2);
 
-            float size = Map(star.Z, 0, Width, 5, 0);
-            float x = Map(star.X / star.Z, 0, 1, 0, Width) + (Width / 2);
-            float y = Map(star.Y / star.Z, 0, 1, 0, Height) + (Height / 2);
+            //byte R = (byte)Map(star.Z, 0, Width, 255, 0);
+            //byte G = 255;
+            //byte B = 255;
 
-            byte R = (byte)Map(star.Z, 0, Width, 255, 0);
+            float size = Map(star.Z, new Line(0, Width), new Line(5, 0));
+            float x = Map(star.X / star.Z, new Line(0, 1), new Line(0, Width)) + (Width / 2);
+            float y = Map(star.Y / star.Z, new Line(0, 1), new Line(0, Height)) + (Height / 2);
+
+            byte R = (byte)Map(star.Z, new Line(0, Width), new Line(255, 0));
             byte G = 255;
             byte B = 255;
 
-            using (SolidBrush solidBrush = new SolidBrush(Color.FromArgb(R, G, B)))
+            using (SolidBrush brush = new SolidBrush(Color.FromArgb(R, G, B)))
             {
-                graphics.FillEllipse(solidBrush, x, y, size, size);
+                graphics.FillEllipse(brush, x, y, size, size);
             }
         }
 
@@ -173,7 +173,7 @@ namespace Stars
             }
 
             ChangeSize();
-            timer1.Start();
+            flyTimer.Start();
             player.Open(Path.Combine(Environment.CurrentDirectory, "Music\\music.mp3"));
             player.Play();
         }
@@ -189,6 +189,8 @@ namespace Stars
         {
             if (isFullSize)
             {
+                mouseTimer.Stop();
+                showMouseInterval = 0;
                 SetSize(formPosition, normalSize, true);
             }
             else
@@ -198,7 +200,6 @@ namespace Stars
             }
 
             isFullSize = !isFullSize;
-
             graphics?.Dispose();
             pictureBox1.Image?.Dispose();
             pictureBox1.Image = new Bitmap(Width, Height);
@@ -207,7 +208,7 @@ namespace Stars
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if ((e.KeyData == Keys.F) || (e.Alt && e.KeyCode == Keys.Enter))
+            if ((e.KeyCode == Keys.F) || (e.Alt && e.KeyCode == Keys.Enter))
             {
                 ChangeSize();
                 return;
@@ -227,23 +228,23 @@ namespace Stars
 
             switch (e.KeyCode)
             {
+                case Keys.Escape:
+                    Application.Exit();
+                    break;
                 case Keys.Space:
-                    if (timer1.Enabled)
+                    if (flyTimer.Enabled)
                     {
-                        timer1.Stop();
+                        flyTimer.Stop();
                         player.Pause();
                     }
                     else
                     {
-                        timer1.Start();
+                        flyTimer.Start();
                         player.Play();
                     }
                     break;
                 case Keys.M:
                     player.Mute();
-                    break;
-                case Keys.Escape:
-                    Application.Exit();
                     break;
                 case Keys.N:
                     player.SetMaxVolume();
@@ -314,10 +315,10 @@ namespace Stars
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isFullSize && !timer2.Enabled)
+            if (isFullSize && !mouseTimer.Enabled)
             {
                 NativeMethods.ShowCursor(true);
-                timer2.Start();
+                mouseTimer.Start();
             }
 
             if (e.Button == MouseButtons.Left && !isFullSize)
@@ -328,23 +329,23 @@ namespace Stars
             }
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void mouseTimer_Tick(object sender, EventArgs e)
         {
-            Application.Exit();
-        }
-
-        private void timer2_Tick(object sender, EventArgs e)
-        {
-            if (showMouseTime < 5)
+            if (showMouseInterval < 5)
             {
-                showMouseTime++;
+                showMouseInterval++;
             }
             else
             {
-                timer2.Stop();
-                showMouseTime = 0;
+                mouseTimer.Stop();
+                showMouseInterval = 0;
                 NativeMethods.ShowCursor(false);
             }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }
