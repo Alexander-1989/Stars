@@ -36,6 +36,7 @@
         public Media_Player(string fileName)
         {
             player = new MediaPlayer.MediaPlayer() { PlayCount = int.MaxValue };
+            Volume = 100;
             FileName = fileName;
         }
 
