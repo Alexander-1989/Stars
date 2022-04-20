@@ -16,17 +16,8 @@
             set
             {
                 int _value = value;
-                if (value >= 0)
-                {
-                    if (_value > 100)
-                    {
-                        _value = 100;
-                    }
-                }
-                else
-                {
-                    _value = 0;
-                }
+                if (_value > 100) _value = 100;
+                else if (_value < 0) _value = 0;
                 player.Volume = (volumeInterval * _value / 100) - volumeInterval;
             }
         }
