@@ -64,7 +64,6 @@ namespace Stars
             _timer.Tick += new EventHandler(Tick);
             _timer.Interval = 1;
             SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
-
         }
 
         private void Tick(object sender, EventArgs e)
