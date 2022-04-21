@@ -16,6 +16,7 @@ namespace Stars
             fullSize = Screen.PrimaryScreen.Bounds.Size;
             formPosition = Location;
             defPosition = new Point(0, 0);
+            message = new MsgBox(this, 60);
             MouseWheel += Form1_MouseWheel;
         }
 
@@ -33,7 +34,7 @@ namespace Stars
         private readonly Star[] stars = new Star[15000];
         private readonly Media_Player player = new Media_Player();
         private readonly Random random = new Random();
-
+        private readonly MsgBox message;
 
         private void Form1_MouseWheel(object sender, MouseEventArgs e)
         {
@@ -70,6 +71,7 @@ namespace Stars
             {
                 way = Direction.None;
                 speed = random.Next(-1, 20);
+                if (speed == 0) { speed = -1; }
                 flyInterval = 0;
                 changeWayInterval = random.Next(20, 60);
                 fullInterval = 100 * random.Next(1, 15);
@@ -133,14 +135,6 @@ namespace Stars
 
         private void DrawStar(Star star)
         {
-            //float size = Map(star.Z, 0, Width, 5, 0);
-            //float x = Map(star.X / star.Z, 0, 1, 0, Width) + (Width / 2);
-            //float y = Map(star.Y / star.Z, 0, 1, 0, Height) + (Height / 2);
-
-            //byte R = (byte)Map(star.Z, 0, Width, 255, 0);
-            //byte G = 255;
-            //byte B = 255;
-
             float size = Map(star.Z, new Line(0, Width), new Line(5, 0));
             float x = Map(star.X / star.Z, new Line(0, 1), new Line(0, Width)) + (Width / 2);
             float y = Map(star.Y / star.Z, new Line(0, 1), new Line(0, Height)) + (Height / 2);
@@ -172,10 +166,12 @@ namespace Stars
                 };
             }
 
-            ChangeSize();
-            flyTimer.Start();
             player.Open(Path.Combine(Environment.CurrentDirectory, "Music\\music.mp3"));
             player.Play();
+            player.State += (s, ev) => message.Show(ev.Message);
+
+            ChangeSize();
+            flyTimer.Start();
         }
 
         private void SetSize(Point location, Size size, bool showCursor)
@@ -317,6 +313,7 @@ namespace Stars
         {
             if (isFullSize && !mouseTimer.Enabled)
             {
+                if (message.Opacity > 0) return;
                 NativeMethods.ShowCursor(true);
                 mouseTimer.Start();
             }
