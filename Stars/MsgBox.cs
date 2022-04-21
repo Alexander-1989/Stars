@@ -95,8 +95,8 @@ namespace Stars
             Size = new Size(Owner.Width, 60);
             Location = new Point(Owner.Location.X, Owner.Location.Y);
             Text = message;
-            _duration = Duration;
             Opacity = 0.99;
+            _duration = Duration;
             _timer.Start();
         }
 

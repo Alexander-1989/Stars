@@ -19,8 +19,8 @@ namespace Stars
             MouseWheel += Form1_MouseWheel;
         }
 
-        private Direction way = Direction.None;
         private Graphics graphics = null;
+        private Direction way;
         private Size fullSize;
         private Size normalSize;
         private Point formPosition;
