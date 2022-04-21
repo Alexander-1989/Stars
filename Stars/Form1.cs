@@ -183,8 +183,8 @@ namespace Stars
 
         private void SetSize(Point location, Size size, bool showCursor)
         {
-            Location = location;
             Size = size;
+            Location = location;
             NativeMethods.ShowCursor(showCursor);
         }
 
@@ -320,7 +320,6 @@ namespace Stars
         {
             if (isFullSize && !mouseTimer.Enabled)
             {
-                if (message.Opacity > 0) return;
                 NativeMethods.ShowCursor(true);
                 mouseTimer.Start();
             }

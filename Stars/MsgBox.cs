@@ -54,8 +54,8 @@ namespace Stars
             BackColor = Color.FromArgb(30, 30, 30);
             StartPosition = FormStartPosition.Manual;
             FormBorderStyle = FormBorderStyle.None;
-            Visible = true;
             Opacity = 0;
+            Visible = true;
             ShowIcon = false;
             ShowInTaskbar = false;
             _message = text;
@@ -64,6 +64,7 @@ namespace Stars
             _timer.Tick += new EventHandler(Tick);
             _timer.Interval = 1;
             SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
+
         }
 
         private void Tick(object sender, EventArgs e)
@@ -95,7 +96,7 @@ namespace Stars
             Location = new Point(Owner.Location.X, Owner.Location.Y);
             Text = message;
             _duration = Duration;
-            Opacity = 1;
+            Opacity = 0.99;
             _timer.Start();
         }
 
