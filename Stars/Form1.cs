@@ -15,15 +15,17 @@ namespace Stars
             normalSize = Size;
             fullSize = Screen.PrimaryScreen.Bounds.Size;
             formPosition = Location;
-            defPosition = new Point(0, 0);
             message = new MsgBox(this, 60);
             MouseWheel += Form1_MouseWheel;
         }
 
         private Direction way = Direction.None;
         private Graphics graphics = null;
-        private Size normalSize, fullSize;
-        private Point formPosition, oldMousePosition, defPosition;
+        private Size fullSize;
+        private Size normalSize;
+        private Point formPosition;
+        private Point oldMousePosition;
+        private const int starsCount = 15000;
         private int flyInterval = 0;
         private int changeWayInterval = 50;
         private int fullInterval = 300;
@@ -31,7 +33,7 @@ namespace Stars
         private int showMouseInterval = 0;
         private bool shake = false;
         private bool isFullSize = false;
-        private readonly Star[] stars = new Star[15000];
+        private readonly Star[] stars = new Star[starsCount];
         private readonly Media_Player player = new Media_Player();
         private readonly Random random = new Random();
         private readonly MsgBox message;
@@ -166,9 +168,14 @@ namespace Stars
                 };
             }
 
-            player.Open(Path.Combine(Environment.CurrentDirectory, "Music\\music.mp3"));
-            player.Play();
-            player.State += (s, ev) => message.Show(ev.Message);
+            try
+            {
+                string fileName = Path.Combine(Environment.CurrentDirectory, "Music\\music.mp3");
+                player.Open(fileName);
+                player.Play();
+                player.State += (s, ev) => message.Show(ev.Message);
+            }
+            catch (Exception) { }
 
             ChangeSize();
             flyTimer.Start();
@@ -192,7 +199,7 @@ namespace Stars
             else
             {
                 formPosition = Location;
-                SetSize(defPosition, fullSize, false);
+                SetSize(new Point(), fullSize, false);
             }
 
             isFullSize = !isFullSize;
