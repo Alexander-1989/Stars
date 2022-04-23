@@ -83,10 +83,10 @@ namespace Stars
             pictureBox1.Invalidate();
         }
 
-        private float Map(float n, float start1, float stop1, float start2, float stop2)
-        {
-            return ((n - start1) * (stop2 - start2) / (stop1 - start1)) + start2;
-        }
+        //private float Map(float n, float start1, float stop1, float start2, float stop2)
+        //{
+        //    return ((n - start1) * (stop2 - start2) / (stop1 - start1)) + start2;
+        //}
 
         private float Map(float point, Line from, Line to)
         {
@@ -226,6 +226,18 @@ namespace Stars
             if (e.Control && e.KeyCode == Keys.Down)
             {
                 player.Volume -= 5;
+                return;
+            }
+
+            if (e.Shift && e.KeyCode == Keys.Up)
+            {
+                speed++;
+                return;
+            }
+
+            if (e.Shift && e.KeyCode == Keys.Down)
+            {
+                speed--;
                 return;
             }
 
