@@ -58,6 +58,7 @@ namespace Stars
             Visible = true;
             ShowIcon = false;
             ShowInTaskbar = false;
+            Height = 60;
             _message = text;
             _duration = Duration = duration;
             _timer = new Timer();
@@ -91,7 +92,7 @@ namespace Stars
 
         public void Show(string message)
         {
-            Size = new Size(Owner.Width, 60);
+            Width = Owner.Width;
             Location = new Point(Owner.Location.X, Owner.Location.Y);
             Text = message;
             Opacity = 0.99;

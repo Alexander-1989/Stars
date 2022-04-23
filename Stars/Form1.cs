@@ -173,7 +173,7 @@ namespace Stars
                 string fileName = Path.Combine(Environment.CurrentDirectory, "Music\\music.mp3");
                 player.Open(fileName);
                 player.Play();
-                player.State += (s, ev) => message.Show(ev.Message);
+                player.Notify += (s, ev) => message.Show(ev.Message);
             }
             catch (Exception) { }
 

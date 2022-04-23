@@ -3,7 +3,7 @@
     internal class Media_Player
     {
         public delegate void PlayerStateHandler(object sender, PlayerEventArgs e);
-        public event PlayerStateHandler State;
+        public event PlayerStateHandler Notify;
         private readonly MediaPlayer.MediaPlayer player;
         private const int volumeInterval = 5000;
         private int _lastVolume;
@@ -21,7 +21,7 @@
                 if (_value > 100) _value = 100;
                 else if (_value < 0) _value = 0;
                 player.Volume = (volumeInterval * _value / 100) - volumeInterval;
-                State?.Invoke(this, new PlayerEventArgs($"Volume: {_value}%"));
+                Notify?.Invoke(this, new PlayerEventArgs($"Volume: {_value}%"));
             }
         }
 
@@ -80,7 +80,7 @@
             if (player.PlayState != MediaPlayer.MPPlayStateConstants.mpPlaying)
             {
                 player.Play();
-                State?.Invoke(this, new PlayerEventArgs("Play"));
+                Notify?.Invoke(this, new PlayerEventArgs("Play"));
             }
         }
 
@@ -89,7 +89,7 @@
             if (player.PlayState != MediaPlayer.MPPlayStateConstants.mpStopped)
             {
                 player.Stop();
-                State?.Invoke(this, new PlayerEventArgs("Stop"));
+                Notify?.Invoke(this, new PlayerEventArgs("Stop"));
             }
         }
 
@@ -98,7 +98,7 @@
             if (player.PlayState != MediaPlayer.MPPlayStateConstants.mpPaused)
             {
                 player.Pause();
-                State?.Invoke(this, new PlayerEventArgs("Pause"));
+                Notify?.Invoke(this, new PlayerEventArgs("Pause"));
             }
         }
 
@@ -118,7 +118,7 @@
             {
                 _lastVolume = Volume;
                 Volume = 0;
-                State?.Invoke(this, new PlayerEventArgs("Mute"));
+                Notify?.Invoke(this, new PlayerEventArgs("Mute"));
             }
             _isMute = !_isMute;
         }
