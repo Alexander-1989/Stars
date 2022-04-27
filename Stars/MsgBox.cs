@@ -76,6 +76,7 @@ namespace Stars
             else if (Opacity > 0)
             {
                 Opacity -= 0.02;
+                Location = new Point(Location.X, Location.Y - 1);
             }
             else
             {
