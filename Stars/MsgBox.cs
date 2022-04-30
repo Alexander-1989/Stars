@@ -10,6 +10,7 @@ namespace Stars
         private readonly StringFormat _stringFormat;
         private readonly SolidBrush _fontBrush;
         private readonly Font _font;
+        private const int maxHeight = 60;
         private string _message;
         private int _duration;
         public int Duration { get; set; }
@@ -50,15 +51,13 @@ namespace Stars
             };
             _fontBrush = new SolidBrush(Color.White);
             Location = new Point(Owner.Location.X, Owner.Location.Y);
-            Size = new Size(Owner.Width, 60);
+            Size = new Size(Owner.Width, maxHeight);
             BackColor = Color.FromArgb(30, 30, 30);
-            StartPosition = FormStartPosition.Manual;
             FormBorderStyle = FormBorderStyle.None;
             Opacity = 0;
             Visible = true;
             ShowIcon = false;
             ShowInTaskbar = false;
-            Height = 60;
             _message = text;
             _duration = Duration = duration;
             _timer = new Timer();
