@@ -1,6 +1,6 @@
 ﻿namespace Stars.Source
 {
-    class Star
+    internal class Star
     {
         public float X { get; set; }
         public float Y { get; set; }

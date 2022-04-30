@@ -6,6 +6,9 @@
         public event PlayerStateHandler Notify;
         private readonly MediaPlayer.MediaPlayer player;
         private const int volumeInterval = 5000;
+        private const int maxVolume = 100;
+        private const int minVolume = 0;
+        private const int maxPlayCount = 2147483647;
         private int _lastVolume;
         private bool _isMute;
         public string FileName { get; set; }
@@ -18,8 +21,8 @@
             set
             {
                 int _value = value;
-                if (_value > 100) _value = 100;
-                else if (_value < 0) _value = 0;
+                if (_value > maxVolume) _value = maxVolume;
+                else if (_value < minVolume) _value = minVolume;
                 player.Volume = (volumeInterval * _value / 100) - volumeInterval;
                 Notify?.Invoke(this, new PlayerEventArgs($"Volume: {_value}%"));
             }
@@ -50,8 +53,8 @@
         public Media_Player(string fileName)
         {
             player = new MediaPlayer.MediaPlayer();
-            PlayCount = int.MaxValue;
-            Volume = 100;
+            PlayCount = maxPlayCount;
+            Volume = maxVolume;
             FileName = fileName;
         }
 
@@ -105,7 +108,7 @@
         public void SetMaxVolume()
         {
             _isMute = false;
-            Volume = 100;
+            Volume = maxVolume;
         }
 
         public void Mute()
@@ -117,20 +120,10 @@
             else
             {
                 _lastVolume = Volume;
-                Volume = 0;
+                Volume = minVolume;
                 Notify?.Invoke(this, new PlayerEventArgs("Mute"));
             }
             _isMute = !_isMute;
-        }
-    }
-
-    class PlayerEventArgs
-    {
-        public string Message { get; }
-
-        public PlayerEventArgs(string message)
-        {
-            Message = message;
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace Stars
 {
-    class MsgBox : Form
+    internal class MsgBox : Form
     {
         private readonly Timer _timer;
         private readonly StringFormat _stringFormat;

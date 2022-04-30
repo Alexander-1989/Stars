@@ -2,7 +2,7 @@
 
 namespace Stars
 {
-    static class NativeMethods
+    internal static class NativeMethods
     {
         private static bool _show = true;
 

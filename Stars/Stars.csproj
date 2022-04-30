@@ -56,6 +56,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Media\MediaPlayer.cs" />
+    <Compile Include="Media\PlayerEventArgs.cs" />
     <Compile Include="MsgBox.cs">
       <SubType>Form</SubType>
     </Compile>

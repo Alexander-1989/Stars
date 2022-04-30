@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace System.IO
 {
-    class INIFile
+    internal class INIFile
     {
         readonly string FileName = null;
 
