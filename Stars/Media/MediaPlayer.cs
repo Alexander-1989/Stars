@@ -2,8 +2,8 @@
 {
     internal class Media_Player
     {
-        public delegate void PlayerStateHandler(object sender, PlayerEventArgs e);
-        public event PlayerStateHandler Notify;
+        public delegate void PlayerEventHandler(object sender, PlayerEventArgs e);
+        public event PlayerEventHandler Notify;
         private readonly MediaPlayer.MediaPlayer player;
         private const int volumeInterval = 5000;
         private const int maxVolume = 100;
@@ -121,7 +121,6 @@
             {
                 _lastVolume = Volume;
                 Volume = minVolume;
-                Notify?.Invoke(this, new PlayerEventArgs("Mute"));
             }
             _isMute = !_isMute;
         }

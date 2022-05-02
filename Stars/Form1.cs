@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Drawing;
 using System.IO;
+using System.Drawing;
 using System.Windows.Forms;
 using Stars.Media;
 using Stars.Source;
@@ -50,7 +50,7 @@ namespace Stars
             }
         }
 
-        private void flyTimer_Tick(object sender, EventArgs e)
+        private void flyTimer_Tick(object sender, System.EventArgs e)
         {
             flyInterval++;
             graphics?.Clear(Color.Black);
@@ -156,7 +156,7 @@ namespace Stars
             return angle * Math.PI / 180;
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void Form1_Load(object sender, System.EventArgs e)
         {
             for (int i = 0; i < stars.Length; i++)
             {
@@ -173,12 +173,17 @@ namespace Stars
                 string fileName = Path.Combine(Environment.CurrentDirectory, "Music\\music.mp3");
                 player.Open(fileName);
                 player.Play();
-                player.Notify += (s, ev) => message.Show(ev.Message);
+                player.Notify += new Media_Player.PlayerEventHandler(Player_Notify);
             }
             catch (Exception) { }
 
             ChangeSize();
             flyTimer.Start();
+        }
+
+        private void Player_Notify(object sender, PlayerEventArgs e)
+        {
+            message.Show(e.Message);
         }
 
         private void SetSize(Point location, Size size, bool showCursor)
@@ -311,7 +316,7 @@ namespace Stars
             way = Direction.None;
         }
 
-        private void pictureBox1_DoubleClick(object sender, EventArgs e)
+        private void pictureBox1_DoubleClick(object sender, System.EventArgs e)
         {
             ChangeSize();
         }
@@ -344,7 +349,7 @@ namespace Stars
             }
         }
 
-        private void mouseTimer_Tick(object sender, EventArgs e)
+        private void mouseTimer_Tick(object sender, System.EventArgs e)
         {
             if (showMouseInterval < 5)
             {
@@ -358,7 +363,7 @@ namespace Stars
             }
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exitToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
             Application.Exit();
         }

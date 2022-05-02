@@ -59,7 +59,8 @@ namespace Stars
             ShowIcon = false;
             ShowInTaskbar = false;
             _message = text;
-            _duration = Duration = duration;
+            _duration = duration;
+            Duration = duration;
             _timer = new Timer();
             _timer.Tick += new EventHandler(Tick);
             _timer.Interval = 1;
