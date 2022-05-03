@@ -156,7 +156,7 @@ namespace Stars
             return angle * Math.PI / 180;
         }
 
-        private void Form1_Load(object sender, System.EventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
         {
             for (int i = 0; i < stars.Length; i++)
             {
@@ -173,7 +173,7 @@ namespace Stars
                 string fileName = Path.Combine(Environment.CurrentDirectory, "Music\\music.mp3");
                 player.Open(fileName);
                 player.Play();
-                player.Notify += new Media_Player.PlayerEventHandler(Player_Notify);
+                player.Notify += Player_Notify;
             }
             catch (Exception) { }
 
