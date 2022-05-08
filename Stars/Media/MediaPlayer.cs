@@ -5,7 +5,7 @@
         public delegate void PlayerEventHandler(object sender, PlayerEventArgs e);
         public event PlayerEventHandler Notify;
         private readonly MediaPlayer.MediaPlayer player;
-        private const int volumeInterval = 5000;
+        private const int volumeInterval = 4050;
         private const int maxVolume = 100;
         private const int minVolume = 0;
         private const int maxPlayCount = 2147483647;
