@@ -16,7 +16,7 @@
         {
             get
             {
-                return 100 * player.Volume / volumeInterval + 100;
+                return (100 * player.Volume / volumeInterval) + 100;
             }
             set
             {

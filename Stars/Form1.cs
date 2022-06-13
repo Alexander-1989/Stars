@@ -179,6 +179,7 @@ namespace Stars
 
             ChangeSize();
             flyTimer.Start();
+            Focus();
         }
 
         private void Player_Notify(object sender, PlayerEventArgs e)
