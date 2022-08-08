@@ -88,9 +88,9 @@ namespace Stars
         //    return ((n - start1) * (stop2 - start2) / (stop1 - start1)) + start2;
         //}
 
-        private float Map(float point, Line from, Line to)
+        private float Map(float currentPoint, Line pointFrom, Line pointTo)
         {
-            return ((point - from.Start) * to.Length / from.Length) + to.Start;
+            return ((currentPoint - pointFrom.Start) * pointTo.Length / pointFrom.Length) + pointTo.Start;
         }
 
         private void MoveStar(Star star)
