@@ -24,6 +24,6 @@
             End = end;
         }
 
-        public float Length { get { return End - Start; } }
+        public float Length => End - Start;
     }
 }
