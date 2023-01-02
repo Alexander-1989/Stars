@@ -65,7 +65,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\Core.cs" />
     <Compile Include="Source\IniFile.cs" />
-    <Compile Include="Source\Start.cs" />
+    <Compile Include="Source\Stars.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
