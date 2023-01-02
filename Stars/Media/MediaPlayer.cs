@@ -4,13 +4,13 @@
     {
         public delegate void PlayerEventHandler(object sender, PlayerEventArgs e);
         public event PlayerEventHandler Notify;
+        public bool IsMute { get; private set; }
         private readonly MediaPlayer.MediaPlayer player;
         private const int volumeInterval = 4050;
         private const int maxVolume = 100;
         private const int minVolume = 0;
-        private const int maxPlayCount = 2147483647;
+        private const int maxPlayCount = int.MaxValue;
         private int _lastVolume;
-        private bool _isMute;
         public string FileName { get; set; }
         public int Volume
         {
@@ -37,14 +37,6 @@
             set
             {
                 player.PlayCount = value;
-            }
-        }
-
-        public bool IsMute
-        {
-            get
-            {
-                return _isMute;
             }
         }
 
@@ -107,13 +99,13 @@
 
         public void SetMaxVolume()
         {
-            _isMute = false;
+            IsMute = false;
             Volume = maxVolume;
         }
 
         public void Mute()
         {
-            if (_isMute)
+            if (IsMute)
             {
                 Volume = _lastVolume;
             }
@@ -122,7 +114,7 @@
                 _lastVolume = Volume;
                 Volume = minVolume;
             }
-            _isMute = !_isMute;
+            IsMute = !IsMute;
         }
     }
 }
