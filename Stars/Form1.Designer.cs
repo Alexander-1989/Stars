@@ -46,14 +46,14 @@
             this.pictureBox1.Size = new System.Drawing.Size(800, 600);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
-            this.pictureBox1.DoubleClick += new System.EventHandler(this.pictureBox1_DoubleClick);
-            this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
-            this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
+            this.pictureBox1.DoubleClick += new System.EventHandler(this.PictureBox1_DoubleClick);
+            this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseDown);
+            this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseMove);
             // 
             // flyTimer
             // 
             this.flyTimer.Interval = 1;
-            this.flyTimer.Tick += new System.EventHandler(this.flyTimer_Tick);
+            this.flyTimer.Tick += new System.EventHandler(this.FlyTimer_Tick);
             // 
             // contextMenuStrip1
             // 
@@ -67,12 +67,12 @@
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(93, 22);
             this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
             // 
             // mouseTimer
             // 
             this.mouseTimer.Interval = 1000;
-            this.mouseTimer.Tick += new System.EventHandler(this.mouseTimer_Tick);
+            this.mouseTimer.Tick += new System.EventHandler(this.MouseTimer_Tick);
             // 
             // Form1
             // 

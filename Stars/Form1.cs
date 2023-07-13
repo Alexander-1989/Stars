@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Drawing;
-using System.Windows.Forms;
 using Stars.Media;
 using Stars.Source;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Stars
 {
@@ -19,6 +19,19 @@ namespace Stars
             MouseWheel += Form1_MouseWheel;
         }
 
+        internal enum Direction : byte
+        {
+            None,
+            Up,
+            Down,
+            Left,
+            Right,
+            RotationUp,
+            RotationDown,
+            RotationLeft,
+            RotationRight
+        }
+
         private Graphics graphics = null;
         private Direction way;
         private Size fullSize;
@@ -31,7 +44,7 @@ namespace Stars
         private int fullInterval = 300;
         private int speed = 5;
         private int showMouseInterval = 0;
-        private bool shake = false;
+        private bool shakeScreen = false;
         private bool isFullSize = false;
         private readonly Star[] stars = new Star[starsCount];
         private readonly Media_Player player = new Media_Player();
@@ -50,7 +63,7 @@ namespace Stars
             }
         }
 
-        private void flyTimer_Tick(object sender, System.EventArgs e)
+        private void FlyTimer_Tick(object sender, EventArgs e)
         {
             flyInterval++;
             graphics?.Clear(Color.Black);
@@ -63,9 +76,9 @@ namespace Stars
 
             if (flyInterval > fullInterval - changeWayInterval)
             {
-                if (shake || way == Direction.None)
+                if (shakeScreen || way == Direction.None)
                 {
-                    way = (Direction)(shake ? random.Next(1, 5) : random.Next(1, 9));
+                    way = (Direction)(shakeScreen ? random.Next(1, 5) : random.Next(1, 9));
                 }
             }
 
@@ -77,20 +90,15 @@ namespace Stars
                 flyInterval = 0;
                 changeWayInterval = random.Next(20, 60);
                 fullInterval = 100 * random.Next(1, 15);
-                shake = random.Next(100) > 70;
+                shakeScreen = random.Next(100) > 70;
             }
 
             pictureBox1.Invalidate();
         }
 
-        //private float Map(float n, float start1, float stop1, float start2, float stop2)
-        //{
-        //    return ((n - start1) * (stop2 - start2) / (stop1 - start1)) + start2;
-        //}
-
-        private float Map(float currentPoint, Line pointFrom, Line pointTo)
+        private float Map(float position, float start1, float end1, float start2, float end2)
         {
-            return ((currentPoint - pointFrom.Start) * pointTo.Length / pointFrom.Length) + pointTo.Start;
+            return ((position - start1) * (end2 - start2) / (end1 - start1)) + start2;
         }
 
         private void MoveStar(Star star)
@@ -131,17 +139,17 @@ namespace Stars
             {
                 star.X = random.Next(-Width, Width);
                 star.Y = random.Next(-Height, Height);
-                star.Z = random.Next(0, Width);
+                star.Z = random.Next(1, Width);
             }
         }
 
         private void DrawStar(Star star)
         {
-            float size = Map(star.Z, new Line(0, Width), new Line(5, 0));
-            float x = Map(star.X / star.Z, new Line(0, 1), new Line(0, Width)) + (Width / 2);
-            float y = Map(star.Y / star.Z, new Line(0, 1), new Line(0, Height)) + (Height / 2);
+            float size = Map(star.Z, 0, Width, 5, 0);
+            float x = Map(star.X / star.Z, 0, 1, 0, Width) + (Width / 2);
+            float y = Map(star.Y / star.Z, 0, 1, 0, Height) + (Height / 2);
 
-            byte R = (byte)Map(star.Z, new Line(0, Width), new Line(255, 0));
+            byte R = (byte)Map(star.Z, 0, Width, 255, 0);
             byte G = 255;
             byte B = 255;
 
@@ -317,12 +325,12 @@ namespace Stars
             way = Direction.None;
         }
 
-        private void pictureBox1_DoubleClick(object sender, System.EventArgs e)
+        private void PictureBox1_DoubleClick(object sender, EventArgs e)
         {
             ChangeSize();
         }
 
-        private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
+        private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             if (!isFullSize && e.Button == MouseButtons.Left)
             {
@@ -334,7 +342,7 @@ namespace Stars
             }
         }
 
-        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
+        private void PictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
             if (isFullSize && !mouseTimer.Enabled)
             {
@@ -350,7 +358,7 @@ namespace Stars
             }
         }
 
-        private void mouseTimer_Tick(object sender, System.EventArgs e)
+        private void MouseTimer_Tick(object sender, EventArgs e)
         {
             if (showMouseInterval < 5)
             {
@@ -364,7 +372,7 @@ namespace Stars
             }
         }
 
-        private void exitToolStripMenuItem_Click(object sender, System.EventArgs e)
+        private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
         }
