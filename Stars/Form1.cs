@@ -50,6 +50,11 @@ namespace Stars
         private readonly Media_Player player = new Media_Player();
         private readonly Random random = new Random();
         private readonly MsgBox message;
+        private const string info = "F1 - Help\nEscape - Close Application\n" +
+                        "Space - Start or Stop\nM - Mute\nN - Max Volume\nB - Hide Cursor\nV - Show Cursor\n" +
+                        "G - Gravity\nUp - Up\nDown - Down\nLeft - Left\nRight - Right\n" +
+                        "W - Rotation Up\nS - Rotation Down\nA - Rotation Right\nD - Rotation Left\n" +
+                        "OemPlus - Speed Up\nOemMinus - Speed Down";
 
         private void Form1_MouseWheel(object sender, MouseEventArgs e)
         {
@@ -257,6 +262,10 @@ namespace Stars
 
             switch (e.KeyCode)
             {
+                case Keys.F1:
+                    MessageBox.Show(info);
+                    NativeMethods.ShowCursor(true);
+                    break;
                 case Keys.Escape:
                     Application.Exit();
                     break;
