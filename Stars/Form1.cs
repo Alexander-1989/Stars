@@ -139,8 +139,7 @@ namespace Stars
                     break;
             }
 
-            star.Z -= speed;
-            if (star.Z < 0)
+            if ((star.Z -= speed) < 0)
             {
                 star.X = random.Next(-Width, Width);
                 star.Y = random.Next(-Height, Height);
@@ -218,7 +217,7 @@ namespace Stars
             else
             {
                 formPosition = Location;
-                SetSize(new Point(), fullSize, false);
+                SetSize(new Point(0, 0), fullSize, false);
             }
 
             isFullSize = !isFullSize;
@@ -348,6 +347,7 @@ namespace Stars
             if (e.Button == MouseButtons.Right)
             {
                 contextMenuStrip1.Show(MousePosition);
+                NativeMethods.ShowCursor(true);
             }
         }
 
