@@ -1,8 +1,8 @@
 ﻿namespace Stars.Media
 {
-    internal class Media_Player
+    internal class AudioPlayer
     {
-        public delegate void PlayerEventHandler(object sender, PlayerEventArgs e);
+        public delegate void PlayerEventHandler(object sender, AudioPlayerEventArgs e);
         public event PlayerEventHandler Notify;
         public bool IsMute { get; private set; }
         private readonly MediaPlayer.MediaPlayer player;
@@ -10,21 +10,19 @@
         private const int maxVolume = 100;
         private const int minVolume = 0;
         private const int maxPlayCount = int.MaxValue;
-        private int _lastVolume;
+        private int lastVolume;
         public string FileName { get; set; }
         public int Volume
         {
             get
             {
-                return (100 * player.Volume / volumeInterval) + 100;
+                return (maxVolume * player.Volume / volumeInterval) + maxVolume;
             }
             set
             {
-                int _value = value;
-                if (_value > maxVolume) _value = maxVolume;
-                else if (_value < minVolume) _value = minVolume;
-                player.Volume = (volumeInterval * _value / 100) - volumeInterval;
-                Notify?.Invoke(this, new PlayerEventArgs($"Volume: {_value}%"));
+                int volume = value > maxVolume ? maxVolume : value < minVolume ? minVolume : value;
+                player.Volume = (volumeInterval * volume / maxVolume) - volumeInterval;
+                Notify?.Invoke(this, new AudioPlayerEventArgs($"Volume: {volume}%"));
             }
         }
 
@@ -40,9 +38,9 @@
             }
         }
 
-        public Media_Player() : this("") { }
+        public AudioPlayer() : this("") { }
 
-        public Media_Player(string fileName)
+        public AudioPlayer(string fileName)
         {
             player = new MediaPlayer.MediaPlayer();
             PlayCount = maxPlayCount;
@@ -75,7 +73,7 @@
             if (player.PlayState != MediaPlayer.MPPlayStateConstants.mpPlaying)
             {
                 player.Play();
-                Notify?.Invoke(this, new PlayerEventArgs("Play"));
+                Notify?.Invoke(this, new AudioPlayerEventArgs("Play"));
             }
         }
 
@@ -84,7 +82,7 @@
             if (player.PlayState != MediaPlayer.MPPlayStateConstants.mpStopped)
             {
                 player.Stop();
-                Notify?.Invoke(this, new PlayerEventArgs("Stop"));
+                Notify?.Invoke(this, new AudioPlayerEventArgs("Stop"));
             }
         }
 
@@ -93,7 +91,7 @@
             if (player.PlayState != MediaPlayer.MPPlayStateConstants.mpPaused)
             {
                 player.Pause();
-                Notify?.Invoke(this, new PlayerEventArgs("Pause"));
+                Notify?.Invoke(this, new AudioPlayerEventArgs("Pause"));
             }
         }
 
@@ -107,11 +105,11 @@
         {
             if (IsMute)
             {
-                Volume = _lastVolume;
+                Volume = lastVolume;
             }
             else
             {
-                _lastVolume = Volume;
+                lastVolume = Volume;
                 Volume = minVolume;
             }
             IsMute = !IsMute;

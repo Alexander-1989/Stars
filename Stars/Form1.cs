@@ -9,6 +9,30 @@ namespace Stars
 {
     public partial class Form1 : Form
     {
+        private Graphics graphics = null;
+        private Direction way;
+        private Size fullSize;
+        private Size normalSize;
+        private Point formPosition;
+        private Point oldMousePosition;
+        private const int starsCount = 15000;
+        private int flyInterval = 0;
+        private int changeWayInterval = 50;
+        private int fullInterval = 300;
+        private int speed = 5;
+        private int showMouseInterval = 0;
+        private bool shaking = false;
+        private bool isFullSize = false;
+        private readonly Star[] stars = new Star[starsCount];
+        private readonly AudioPlayer audioPlayer = new AudioPlayer();
+        private readonly Random random = new Random();
+        private readonly MsgBox message = null;
+        private const string info = "F1 - Help\nEscape - Close Application\n" +
+                        "Space - Start or Stop\nM - Mute\nN - Max Volume\nB - Hide Cursor\nV - Show Cursor\n" +
+                        "G - Gravity\nUp - Up\nDown - Down\nLeft - Left\nRight - Right\n" +
+                        "W - Rotation Up\nS - Rotation Down\nA - Rotation Right\nD - Rotation Left\n" +
+                        "OemPlus - Speed Up\nOemMinus - Speed Down";
+
         public Form1()
         {
             InitializeComponent();
@@ -32,39 +56,15 @@ namespace Stars
             RotationRight
         }
 
-        private Graphics graphics = null;
-        private Direction way;
-        private Size fullSize;
-        private Size normalSize;
-        private Point formPosition;
-        private Point oldMousePosition;
-        private const int starsCount = 15000;
-        private int flyInterval = 0;
-        private int changeWayInterval = 50;
-        private int fullInterval = 300;
-        private int speed = 5;
-        private int showMouseInterval = 0;
-        private bool shakeScreen = false;
-        private bool isFullSize = false;
-        private readonly Star[] stars = new Star[starsCount];
-        private readonly Media_Player player = new Media_Player();
-        private readonly Random random = new Random();
-        private readonly MsgBox message;
-        private const string info = "F1 - Help\nEscape - Close Application\n" +
-                        "Space - Start or Stop\nM - Mute\nN - Max Volume\nB - Hide Cursor\nV - Show Cursor\n" +
-                        "G - Gravity\nUp - Up\nDown - Down\nLeft - Left\nRight - Right\n" +
-                        "W - Rotation Up\nS - Rotation Down\nA - Rotation Right\nD - Rotation Left\n" +
-                        "OemPlus - Speed Up\nOemMinus - Speed Down";
-
         private void Form1_MouseWheel(object sender, MouseEventArgs e)
         {
             if (e.Delta < 0)
             {
-                player.Volume -= 2;
+                audioPlayer.Volume -= 2;
             }
             else if (e.Delta > 0)
             {
-                player.Volume += 2;
+                audioPlayer.Volume += 2;
             }
         }
 
@@ -79,11 +79,11 @@ namespace Stars
                 MoveStar(star);
             }
 
-            if (flyInterval > fullInterval - changeWayInterval)
+            if (flyInterval + changeWayInterval > fullInterval)
             {
-                if (shakeScreen || way == Direction.None)
+                if (shaking || way == Direction.None)
                 {
-                    way = (Direction)(shakeScreen ? random.Next(1, 5) : random.Next(1, 9));
+                    way = (Direction)(shaking ? random.Next(1, 5) : random.Next(1, 9));
                 }
             }
 
@@ -91,11 +91,10 @@ namespace Stars
             {
                 way = Direction.None;
                 speed = random.Next(-1, 20);
-                if (speed == 0) { speed = -1; }
                 flyInterval = 0;
                 changeWayInterval = random.Next(20, 60);
                 fullInterval = 100 * random.Next(1, 15);
-                shakeScreen = random.Next(100) > 70;
+                shaking = random.Next(100) > 70;
             }
 
             pictureBox1.Invalidate();
@@ -157,7 +156,8 @@ namespace Stars
             byte G = 255;
             byte B = 255;
 
-            using (SolidBrush brush = new SolidBrush(Color.FromArgb(R, G, B)))
+            Color color = Color.FromArgb(R, G, B);
+            using (SolidBrush brush = new SolidBrush(color))
             {
                 graphics.FillEllipse(brush, x, y, size, size);
             }
@@ -182,10 +182,10 @@ namespace Stars
 
             try
             {
-                string fileName = Path.Combine(Environment.CurrentDirectory, "Music\\music.mp3");
-                player.Open(fileName);
-                player.Play();
-                player.Notify += Player_Notify;
+                string fileName = ".\\Music\\music.mp3";
+                audioPlayer.Open(fileName);
+                audioPlayer.Play();
+                audioPlayer.Notify += PlayerNotify;
             }
             catch (Exception) { }
 
@@ -194,7 +194,7 @@ namespace Stars
             Focus();
         }
 
-        private void Player_Notify(object sender, PlayerEventArgs e)
+        private void PlayerNotify(object sender, AudioPlayerEventArgs e)
         {
             message.Show(e.Message);
         }
@@ -237,13 +237,13 @@ namespace Stars
 
             if (e.Control && e.KeyCode == Keys.Up)
             {
-                player.Volume += 5;
+                audioPlayer.Volume += 5;
                 return;
             }
 
             if (e.Control && e.KeyCode == Keys.Down)
             {
-                player.Volume -= 5;
+                audioPlayer.Volume -= 5;
                 return;
             }
 
@@ -272,19 +272,19 @@ namespace Stars
                     if (flyTimer.Enabled)
                     {
                         flyTimer.Stop();
-                        player.Pause();
+                        audioPlayer.Pause();
                     }
                     else
                     {
                         flyTimer.Start();
-                        player.Play();
+                        audioPlayer.Play();
                     }
                     break;
                 case Keys.M:
-                    player.Mute();
+                    audioPlayer.Mute();
                     break;
                 case Keys.N:
-                    player.SetMaxVolume();
+                    audioPlayer.SetMaxVolume();
                     break;
                 case Keys.B:
                     NativeMethods.ShowCursor(false);
