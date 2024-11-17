@@ -6,9 +6,16 @@
         public float Y { get; set; }
         public float Z { get; set; }
 
-        public Star() { }
+        public Star() : this(0, 0, 0) { }
 
         public Star(float x, float y, float z)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+        }
+
+        public void SetCoord(int x, int y, int z)
         {
             X = x;
             Y = y;

@@ -112,6 +112,7 @@
                 lastVolume = Volume;
                 Volume = minVolume;
             }
+
             IsMute = !IsMute;
         }
     }

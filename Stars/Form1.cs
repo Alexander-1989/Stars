@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Stars.Media;
 using Stars.Source;
 using System.Drawing;
@@ -81,9 +80,13 @@ namespace Stars
 
             if (flyInterval + changeWayInterval > fullInterval)
             {
-                if (shaking || way == Direction.None)
+                if (shaking)
                 {
-                    way = (Direction)(shaking ? random.Next(1, 5) : random.Next(1, 9));
+                    way = (Direction)random.Next(1, 5);
+                }
+                else if (way == Direction.None)
+                {
+                    way = (Direction)random.Next(1, 9);
                 }
             }
 
@@ -103,6 +106,22 @@ namespace Stars
         private float Map(float position, float start1, float end1, float start2, float end2)
         {
             return ((position - start1) * (end2 - start2) / (end1 - start1)) + start2;
+        }
+
+        private void SetStarCoord(Star star)
+        {
+            star.X = random.Next(-Width, Width);
+            star.Y = random.Next(-Height, Height);
+            star.Z = random.Next(1, Width);
+        }
+
+        private void InitStars()
+        {
+            for (int i = 0; i < stars.Length; i++)
+            {
+                stars[i] = new Star();
+                SetStarCoord(stars[i]);
+            }
         }
 
         private void MoveStar(Star star)
@@ -138,11 +157,10 @@ namespace Stars
                     break;
             }
 
-            if ((star.Z -= speed) < 0)
+            star.Z -= speed;
+            if (star.Z < 0)
             {
-                star.X = random.Next(-Width, Width);
-                star.Y = random.Next(-Height, Height);
-                star.Z = random.Next(1, Width);
+                SetStarCoord(star);
             }
         }
 
@@ -170,15 +188,7 @@ namespace Stars
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            for (int i = 0; i < stars.Length; i++)
-            {
-                stars[i] = new Star()
-                {
-                    X = random.Next(-Width, Width),
-                    Y = random.Next(-Height, Height),
-                    Z = random.Next(1, Width),
-                };
-            }
+            InitStars();
 
             try
             {
