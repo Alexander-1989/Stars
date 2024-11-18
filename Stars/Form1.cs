@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Stars.Media;
 using Stars.Source;
 using System.Drawing;
@@ -27,6 +28,7 @@ namespace Stars
         private readonly Random random = new Random();
         private readonly Star[] stars = new Star[starsCount];
         private readonly AudioPlayer audioPlayer = new AudioPlayer();
+        private readonly string musicFileName = Application.StartupPath + "\\Music\\music.mp3";
         private const string info =
             "F1 - Help\nEscape - Close Application\n" +
             "Space - Start or Stop\nM - Mute\nN - Max Volume\nB - Hide Cursor\nV - Show Cursor\n" +
@@ -105,9 +107,9 @@ namespace Stars
             pictureBox1.Invalidate();
         }
 
-        private float Map(float position, float start1, float end1, float start2, float end2)
+        private float Map(float position, float startA, float endA, float startB, float endB)
         {
-            return ((position - start1) * (end2 - start2) / (end1 - start1)) + start2;
+            return ((position - startA) * (endB - startB) / (endA - startA)) + startB;
         }
 
         private void InitStars()
@@ -189,8 +191,7 @@ namespace Stars
         {
             try
             {
-                string fileName = ".\\Music\\music.mp3";
-                audioPlayer.Open(fileName);
+                audioPlayer.Open(musicFileName);
                 audioPlayer.Play();
                 audioPlayer.Notify += PlayerNotify;
             }
@@ -331,6 +332,9 @@ namespace Stars
                     break;
                 case Keys.OemMinus:
                     speed--;
+                    break;
+                case Keys.C:
+                    way = Direction.None;
                     break;
             }
         }
