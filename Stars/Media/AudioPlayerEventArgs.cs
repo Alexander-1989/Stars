@@ -6,10 +6,7 @@
 
         public AudioPlayerEventArgs(string message)
         {
-            if (!string.IsNullOrEmpty(message))
-            {
-                Message = message;
-            }
+            Message = message ?? string.Empty;
         }
     }
 }

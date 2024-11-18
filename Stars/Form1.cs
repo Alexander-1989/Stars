@@ -15,22 +15,24 @@ namespace Stars
         private Point formPosition;
         private Point oldMousePosition;
         private const int starsCount = 15000;
+        private const int showMouseSeconds = 5;
+        private int speed = 5;
         private int flyInterval = 0;
         private int changeWayInterval = 50;
         private int fullInterval = 300;
-        private int speed = 5;
         private int showMouseInterval = 0;
         private bool shaking = false;
         private bool isFullSize = false;
+        private readonly MsgBox message = null;
+        private readonly Random random = new Random();
         private readonly Star[] stars = new Star[starsCount];
         private readonly AudioPlayer audioPlayer = new AudioPlayer();
-        private readonly Random random = new Random();
-        private readonly MsgBox message = null;
-        private const string info = "F1 - Help\nEscape - Close Application\n" +
-                        "Space - Start or Stop\nM - Mute\nN - Max Volume\nB - Hide Cursor\nV - Show Cursor\n" +
-                        "G - Gravity\nUp - Up\nDown - Down\nLeft - Left\nRight - Right\n" +
-                        "W - Rotation Up\nS - Rotation Down\nA - Rotation Right\nD - Rotation Left\n" +
-                        "OemPlus - Speed Up\nOemMinus - Speed Down";
+        private const string info =
+            "F1 - Help\nEscape - Close Application\n" +
+            "Space - Start or Stop\nM - Mute\nN - Max Volume\nB - Hide Cursor\nV - Show Cursor\n" +
+            "G - Gravity\nUp - Up\nDown - Down\nLeft - Left\nRight - Right\n" +
+            "W - Rotation Up\nS - Rotation Down\nA - Rotation Right\nD - Rotation Left\n" +
+            "OemPlus - Speed Up\nOemMinus - Speed Down";
 
         public Form1()
         {
@@ -108,26 +110,21 @@ namespace Stars
             return ((position - start1) * (end2 - start2) / (end1 - start1)) + start2;
         }
 
-        private void SetStarCoord(Star star)
-        {
-            star.X = random.Next(-Width, Width);
-            star.Y = random.Next(-Height, Height);
-            star.Z = random.Next(1, Width);
-        }
-
         private void InitStars()
         {
             for (int i = 0; i < stars.Length; i++)
             {
-                stars[i] = new Star();
-                SetStarCoord(stars[i]);
+                int x = random.Next(-Width, Width);
+                int y = random.Next(-Height, Height);
+                int z = random.Next(1, Width);
+                stars[i] = new Star(x, y, z);
             }
         }
 
         private void MoveStar(Star star)
         {
-            const double angle = 2;
             const float step = 10;
+            const double angle = 2;
 
             switch (way)
             {
@@ -160,7 +157,9 @@ namespace Stars
             star.Z -= speed;
             if (star.Z < 0)
             {
-                SetStarCoord(star);
+                star.X = random.Next(-Width, Width);
+                star.Y = random.Next(-Height, Height);
+                star.Z = random.Next(1, Width);
             }
         }
 
@@ -188,8 +187,6 @@ namespace Stars
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            InitStars();
-
             try
             {
                 string fileName = ".\\Music\\music.mp3";
@@ -199,9 +196,9 @@ namespace Stars
             }
             catch (Exception) { }
 
+            InitStars();
             ChangeSize();
             flyTimer.Start();
-            Focus();
         }
 
         private void PlayerNotify(object sender, AudioPlayerEventArgs e)
@@ -379,7 +376,7 @@ namespace Stars
 
         private void MouseTimer_Tick(object sender, EventArgs e)
         {
-            if (showMouseInterval < 5)
+            if (showMouseInterval < showMouseSeconds)
             {
                 showMouseInterval++;
             }
