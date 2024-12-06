@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Stars.Media;
 using Stars.Source;
 using System.Drawing;
@@ -9,19 +8,31 @@ namespace Stars
 {
     public partial class Form1 : Form
     {
-        private Graphics graphics = null;
+        internal enum Direction : byte
+        {
+            None,
+            Up,
+            Down,
+            Left,
+            Right,
+            RotationUp,
+            RotationDown,
+            RotationLeft,
+            RotationRight
+        }
+        private Graphics graphics;
         private Direction way;
         private Size fullSize;
         private Size normalSize;
         private Point formPosition;
         private Point oldMousePosition;
         private const int starsCount = 15000;
-        private const int showMouseSeconds = 5;
-        private int speed = 5;
+        private const int showMouseInterval = 5;
+        private int speed = 0;
         private int flyInterval = 0;
-        private int changeWayInterval = 50;
-        private int fullInterval = 300;
-        private int showMouseInterval = 0;
+        private int changeWayInterval = 0;
+        private int fullInterval = 0;
+        private int showMouseSeconds = 0;
         private bool shaking = false;
         private bool isFullSize = false;
         private readonly MsgBox message = null;
@@ -44,19 +55,6 @@ namespace Stars
             formPosition = Location;
             message = new MsgBox(this, 60);
             MouseWheel += Form1_MouseWheel;
-        }
-
-        internal enum Direction : byte
-        {
-            None,
-            Up,
-            Down,
-            Left,
-            Right,
-            RotationUp,
-            RotationDown,
-            RotationLeft,
-            RotationRight
         }
 
         private void Form1_MouseWheel(object sender, MouseEventArgs e)
@@ -96,11 +94,11 @@ namespace Stars
 
             if (flyInterval > fullInterval)
             {
+                flyInterval = 0;
                 way = Direction.None;
                 speed = random.Next(-1, 20);
-                flyInterval = 0;
                 changeWayInterval = random.Next(20, 60);
-                fullInterval = 100 * random.Next(1, 15);
+                fullInterval = random.Next(100, 1500);
                 shaking = random.Next(100) > 70;
             }
 
@@ -178,7 +176,7 @@ namespace Stars
             Color color = Color.FromArgb(R, G, B);
             using (SolidBrush brush = new SolidBrush(color))
             {
-                graphics.FillEllipse(brush, x, y, size, size);
+                graphics?.FillEllipse(brush, x, y, size, size);
             }
         }
 
@@ -219,7 +217,7 @@ namespace Stars
             if (isFullSize)
             {
                 mouseTimer.Stop();
-                showMouseInterval = 0;
+                showMouseSeconds = 0;
                 SetSize(formPosition, normalSize, true);
             }
             else
@@ -233,6 +231,7 @@ namespace Stars
             pictureBox1.Image?.Dispose();
             pictureBox1.Image = new Bitmap(Width, Height);
             graphics = Graphics.FromImage(pictureBox1.Image);
+            Focus();
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -366,8 +365,8 @@ namespace Stars
         {
             if (isFullSize && !mouseTimer.Enabled)
             {
-                NativeMethods.ShowCursor(true);
                 mouseTimer.Start();
+                NativeMethods.ShowCursor(true);  
             }
 
             if (e.Button == MouseButtons.Left && !isFullSize)
@@ -380,14 +379,14 @@ namespace Stars
 
         private void MouseTimer_Tick(object sender, EventArgs e)
         {
-            if (showMouseInterval < showMouseSeconds)
+            if (showMouseSeconds < showMouseInterval)
             {
-                showMouseInterval++;
+                showMouseSeconds++;
             }
             else
             {
                 mouseTimer.Stop();
-                showMouseInterval = 0;
+                showMouseSeconds = 0;
                 NativeMethods.ShowCursor(false);
             }
         }

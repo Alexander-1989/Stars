@@ -9,7 +9,6 @@
         private const int volumeInterval = 4050;
         private const int maxVolume = 100;
         private const int minVolume = 0;
-        private const int maxPlayCount = int.MaxValue;
         private int lastVolume;
         public string FileName { get; set; }
         public int Volume
@@ -43,7 +42,7 @@
         public AudioPlayer(string fileName)
         {
             player = new MediaPlayer.MediaPlayer();
-            PlayCount = maxPlayCount;
+            PlayCount = 0;
             Volume = maxVolume;
             FileName = fileName;
         }
