@@ -26,8 +26,11 @@ namespace Stars
         private Size normalSize;
         private Point formPosition;
         private Point oldMousePosition;
+        private const int angle = 2;
+        private const int step = 10;
         private const int starsCount = 15000;
         private const int showMouseInterval = 5;
+        private const int volumeIncrement = 5;
         private int speed = 0;
         private int flyInterval = 0;
         private int changeWayInterval = 0;
@@ -59,13 +62,13 @@ namespace Stars
 
         private void Form1_MouseWheel(object sender, MouseEventArgs e)
         {
-            if (e.Delta < 0)
+            if (e.Delta > 0)
             {
-                audioPlayer.Volume -= 2;
+                audioPlayer.Volume += volumeIncrement;
             }
-            else if (e.Delta > 0)
+            else if (e.Delta < 0)
             {
-                audioPlayer.Volume += 2;
+                audioPlayer.Volume -= volumeIncrement;
             }
         }
 
@@ -123,9 +126,6 @@ namespace Stars
 
         private void MoveStar(Star star)
         {
-            const float step = 10;
-            const double angle = 2;
-
             switch (way)
             {
                 case Direction.Up:
@@ -244,13 +244,13 @@ namespace Stars
 
             if (e.Control && e.KeyCode == Keys.Up)
             {
-                audioPlayer.Volume += 5;
+                audioPlayer.Volume += volumeIncrement;
                 return;
             }
 
             if (e.Control && e.KeyCode == Keys.Down)
             {
-                audioPlayer.Volume -= 5;
+                audioPlayer.Volume -= volumeIncrement;
                 return;
             }
 
