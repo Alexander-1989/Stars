@@ -113,7 +113,7 @@ namespace Stars
             return ((position - startA) * (endB - startB) / (endA - startA)) + startB;
         }
 
-        private void InitStars()
+        private void InitStars(Star[] stars)
         {
             for (int i = 0; i < stars.Length; i++)
             {
@@ -195,7 +195,7 @@ namespace Stars
             }
             catch (Exception) { }
 
-            InitStars();
+            InitStars(stars);
             ChangeSize();
             flyTimer.Start();
         }

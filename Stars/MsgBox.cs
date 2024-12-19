@@ -96,7 +96,7 @@ namespace Stars
             Width = Owner.Width;
             Location = new Point(Owner.Location.X, Owner.Location.Y);
             Text = message;
-            Opacity = 0.99;
+            Opacity = 0.95;
             _duration = Duration;
             _timer.Start();
         }
